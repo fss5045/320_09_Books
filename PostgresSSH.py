@@ -1,6 +1,7 @@
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 from dotenv import dotenv_values
+import PostgresFunctions
 
 config = dotenv_values("LoginCredentials.env")
 
@@ -28,8 +29,9 @@ try:
         curs = conn.cursor()
         print("Database connection established")
 
-        #DB work here....
+        print(PostgresFunctions.showBook(curs))
 
         conn.close()
-except:
+except Exception as e:
+    print(e)
     print("Connection failed")
