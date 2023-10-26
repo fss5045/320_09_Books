@@ -26,10 +26,16 @@ try:
 
 
         conn = psycopg2.connect(**params)
+        conn.autocommit = True
         curs = conn.cursor()
         print("Database connection established")
 
-        print(PostgresFunctions.showBook(curs))
+        #print(PostgresFunctions.showBook(curs))
+        #PostgresFunctions.followUser(curs, "fcostard0", "aalexander1")
+        #PostgresFunctions.unfollowUser(curs, "fcostard0", "aalexander1")
+        #PostgresFunctions.createNewUser(curs, "tester", "fakepass", "ethan", "nunez", "ern1274@rit.edu")
+        #PostgresFunctions.deleteUser(curs, "tester")
+
 
         conn.close()
 except Exception as e:
