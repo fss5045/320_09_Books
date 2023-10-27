@@ -204,6 +204,7 @@ try:
 
 
         conn = psycopg2.connect(**params)
+        conn.autocommit = True
         curs = conn.cursor()
         print("Database connection established")
 
