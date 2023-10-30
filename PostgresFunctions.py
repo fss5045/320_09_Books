@@ -36,16 +36,25 @@ def modifyCollectionName(curs, collectionId, username):
 def deleteCollection(curs, collectionId, username):
     return
 
-def searchBooks(curs, name, releaseDate, authors, publishers, genre):
+def searchBooks(curs, searchDict):
+    query = "SELECT B.bookid, B.title, B.authors, B.publishers, B.length, B.audience FROM book B UNION SELECT R.bookid, R.rating FROM rates R WHERE B.bookid = R.bookid"
+    for key, value in searchDict.items():
+        query += " AND B." + key + " = '" + value + "'"
+    query += " ORDER BY title ASC, releasedate ASC"
+    # print(curs.mogrify(query))
+    curs.execute(query)
+    return curs.fetchall(), query
+
+def sortBooksByName(curs, query, name, ascending: bool):
     return
 
-def filterBooksByName(curs, books):
+def sortBooksByPublisher(curs, query, publisher, ascending: bool):
     return
 
-def filterBooksByReleaseDate(curs, books, ascending: bool):
+def sortBooksByGenre(curs, query, genre, ascending: bool):
     return
 
-def filterBooksByGenre(curs, books, genre):
+def sortBooksByReleaseYear(curs, quey, ascending: bool):
     return
 
 def addBookToCollection(curs, collectionId, book):
