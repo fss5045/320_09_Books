@@ -16,17 +16,48 @@ def loginPrompt():
         print("Exit: q")
         cmdlnInput = input(":")
         if cmdlnInput == '1':
-            usernm = input("Username: ")
-            psswrd = input("Password: ")
-            #SQL Login Function
-            #return Account ID
-            #for now
+            alreadyExisting = False
+            confirmPass = False
+            usernm = ""
+            psswrd = ""
+            while(alreadyExisting != True):
+                usernm = input("Username: ")
+                if(PostgresFunctions.alreadyExistingUser(curs, usernm)):
+                    alreadyExisting = True
+                else:
+                    print("This username does not exist, please try again or make a new account")
+            while(confirmPass != True):
+                psswrd = input("Password: ")
+                if(PostgresFunctions.userMatchPassword(curs, usernm, psswrd)):
+                    confirmPass = True
+                else:
+                    print("password does not match, try again")
             return usernm
         elif cmdlnInput == '2':
-            usernm = input("Username: ")
-            psswrd = input("Password: ")
-            psswrdconf = input("Confirm Password: ")
-            #SQL Create Account
+            alreadyExisting = True
+            passConfirmation = False
+            usernm = ""
+            psswrd = ""
+            while(alreadyExisting):
+                usernm = input("Username: ")
+                if(PostgresFunctions.alreadyExistingUser(curs, usernm) == False):
+                    alreadyExisting = False
+                else:
+                    print("Username taken, please choose a different one")
+
+            while(passConfirmation != True):
+                psswrd = input("Password: ")
+                psswrdconf = input("Confirm Password: ")
+                if(psswrd == psswrdconf):
+                    passConfirmation = True
+                else:
+                    print("Passwords do not match, try again")
+
+            firstnm = input("First Name: ")
+            lastnm = input("Last Name: ")
+            email = input("Email: ")
+            PostgresFunctions.createNewUser(curs, usernm, psswrd, firstnm, lastnm, email)
+            return usernm
         elif cmdlnInput == 'q':
             return None
         else:
