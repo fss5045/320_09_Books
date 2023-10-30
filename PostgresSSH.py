@@ -81,10 +81,10 @@ def printSearchQuery(searchQuery):
 def bookFilterPrompt(originalQuery):
     #takes the original query and then adds on filters
     while (True):
-        print("Filter by Name: 1")
-        print("Filter by Release Date: 2")
-        print("Filter by Publisher: 3")
-        print("Filter by Genre: 4")
+        print("Sort by Name: 1")
+        print("Sort by Release Date: 2")
+        print("Sort by Publisher: 3")
+        print("Sort by Genre: 4")
         print("Add book to your collection: 5")
         print("Back to search: q")
         cmdlnInput = input(":")
@@ -140,7 +140,7 @@ def bookSearchPrompt():
             #Search filter/ordering menu
             (fetch, query) = PostgresFunctions.searchBooks(curs, searchQuery)
             print(fetch)
-            bookFilterPrompt(searchQuery, query)
+            bookFilterPrompt(query)
             pass
         elif (cmdlnInput == "7"):
             searchQuery = dict()  
