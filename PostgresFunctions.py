@@ -24,24 +24,25 @@ def unfollowUser(curs, username1, username2):
     curs.execute("DELETE FROM userfollow WHERE usernamefollowed = %s AND usernamefollower = %s", (username1, username2))
     return
 
-def createCollection(curs, books, name):
-    curs.execute("INSERT INTO collection VALUES (%s, %s)", (books, name) )
+def createCollection(curs, books, name, username):
+    curs.execute("INSERT INTO collection (name, username) VALUES (%s, %s)", (name, username))
+    curs.execute("SELECT FROM collection WHERE name = %s AND username = %s", (name, username))
+    collectionId = curs.fetchone()[0]
+    for book in books:
+        curs.execute("INSERT INTO belongsto (collectionid, book) values (%s, %s)", (collectionId, book))
     return
 
 def showCollections(curs, username):
     curs.execute("SELECT FROM username WHERE username = %s" , (username))
     return
 
-def modifyCollectionName(curs, collectionId, username):
-    curs.execute("UPDATE collection SET username = %s WHERE collectionId = %s", (username, collectionId))
+def modifyCollectionName(curs, collectionId, username, newCollectionName):
+    curs.execute("UPDATE collection SET name = %s WHERE collectionId = %s AND username = %s", (newCollectionName, collectionId, username))
     return
 
-def deleteCollection(curs, collectionId, username, currentUsername):
-    if (username == currentUsername):
-        curs.execute("DELETE FROM collection WHERE collectionId = %s" , (collectionId))
-        return 
-    else:
-        return
+def deleteCollection(curs, collectionId, username):
+    curs.execute("DELETE FROM collection WHERE collectionId = %s AND username = %s" , (collectionId, username))
+    return 
 
 def searchBooks(curs, name, releaseDate, authors, publishers, genre):
     return

@@ -157,16 +157,21 @@ def collectionsPrompt():
         print("Back to main: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
-            #SQL Query show users collections
-            pass
+            PostgresFunctions.showCollections(curs, currentUsername)
         elif (cmdlnInput == "2"):
             newCollectionName = input("Name your collection: ")
-            #SQL Query Create Collection
-            pass
+            books = []
+            print("Give books to add to your new collection, enter q to finish")
+            while (True):
+                book = input("Enter a name of a book to add: ")
+                if (book == 'q'):
+                    break
+                else:
+                    books.append(books)
+            PostgresFunctions.createCollection(curs, books, newCollectionName, currentUsername)
         elif (cmdlnInput == "3"):
             delCollectionId = input("CollectionId to delete: ")
-            #SQL Query Delete Collection
-            pass
+            PostgresFunctions.deleteCollection(curs, delCollectionId, currentUsername)
         if (cmdlnInput == "q"):
             break
 
