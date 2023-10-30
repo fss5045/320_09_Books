@@ -126,19 +126,21 @@ def bookSearchPrompt():
         printSearchQuery(searchQuery)
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
-            searchQuery["Name"] = input("Title: ")
+            searchQuery["title"] = input("Title: ")
         elif (cmdlnInput == "2"):
-            searchQuery["Release"] = input("Release Date: ")
+            searchQuery["release"] = input("Release Date: ")
         elif (cmdlnInput == "3"):
-            searchQuery["Author"] = input("Author: ")
+            searchQuery["author"] = input("Author: ")
         elif (cmdlnInput == "4"):
-            searchQuery["Release"] = input("Publisher: ")
+            searchQuery["publisher"] = input("Publisher: ")
         elif (cmdlnInput == "5"):
-            searchQuery["Genre"] = input("Genre: ")
+            searchQuery["genre"] = input("Genre: ")
         elif (cmdlnInput == "6"):
             #Check for valid search
             #Search filter/ordering menu
-            bookFilterPrompt(searchQuery)
+            (fetch, query) = PostgresFunctions.searchBooks(curs, searchQuery)
+            print(fetch)
+            bookFilterPrompt(searchQuery, query)
             pass
         elif (cmdlnInput == "7"):
             searchQuery = dict()  
@@ -196,16 +198,21 @@ def collectionsPrompt():
         print("Back to main: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
-            #SQL Query show users collections
-            pass
+            PostgresFunctions.showCollections(curs, currentUsername)
         elif (cmdlnInput == "2"):
             newCollectionName = input("Name your collection: ")
-            #SQL Query Create Collection
-            pass
+            books = []
+            print("Give books to add to your new collection, enter q to finish")
+            while (True):
+                book = input("Enter a name of a book to add: ")
+                if (book == 'q'):
+                    break
+                else:
+                    books.append(books)
+            PostgresFunctions.createCollection(curs, books, newCollectionName, currentUsername)
         elif (cmdlnInput == "3"):
             delCollectionId = input("CollectionId to delete: ")
-            #SQL Query Delete Collection
-            pass
+            PostgresFunctions.deleteCollection(curs, delCollectionId, currentUsername)
         if (cmdlnInput == "q"):
             break
 
