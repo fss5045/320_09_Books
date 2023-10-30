@@ -25,9 +25,11 @@ def unfollowUser(curs, username1, username2):
     return
 
 def createCollection(curs, books, name):
+    curs.execute("INSERT INTO collection VALUES (%s, %s)", (books, name) )
     return
 
 def showCollections(curs, username):
+    curs.execute("SELECT FROM username WHERE username = %s" , (username))
     return
 
 def modifyCollectionName(curs, collectionId, username):
