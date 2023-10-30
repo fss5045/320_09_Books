@@ -33,10 +33,15 @@ def showCollections(curs, username):
     return
 
 def modifyCollectionName(curs, collectionId, username):
+    curs.execute("UPDATE collection SET username = %s WHERE collectionId = %s", (username, collectionId))
     return
 
-def deleteCollection(curs, collectionId, username):
-    return
+def deleteCollection(curs, collectionId, username, currentUsername):
+    if (username == currentUsername):
+        curs.execute("DELETE FROM collection WHERE collectionId = %s" , (collectionId))
+        return 
+    else:
+        return
 
 def searchBooks(curs, name, releaseDate, authors, publishers, genre):
     return
