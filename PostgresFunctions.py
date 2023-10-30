@@ -51,7 +51,9 @@ def filterBooksByGenre(curs, books, genre):
     return
 
 def addBookToCollection(curs, collectionId, book):
+    curs.execute("INSERT INTO belongsto (collectionid, book) values (%s, %s)", (collectionId, book))
     return
 
 def deleteBookFromCollection(curs, collectionId, book):
+    curs.execute("DELETE FROM belongsto WHERE collectionid=%s AND book=%s", (collectionId, book))
     return
