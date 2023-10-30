@@ -149,13 +149,21 @@ def followUserPrompt():
     global currentUsername
     print("Give the user you want to follow")
     otherUsername = input("Give username: ")
-    #check if its a valid username
+    if(PostgresFunctions.alreadyExistingUser(curs, otherUsername)):
+        # Maybe check if they already follow each other
+        PostgresFunctions.followUser(curs,currentUsername,otherUsername)
+    else:
+        print("The user you want to follow does not exist")
 
 def unfollowUserPrompt():
     global currentUsername
     print("Give the user you want to unfollow")
-    otherUserName = input("Give username: ")
-    #check if its a valid username      
+    otherUsername = input("Give username: ")
+    if (PostgresFunctions.alreadyExistingUser(curs, otherUsername)):
+        # Maybe check if they already follow each other
+        PostgresFunctions.unfollowUser(curs, currentUsername, otherUsername)
+    else:
+        print("The user you want to unfollow does not exist")
 
 def userSearchPrompt():
     global currentUsername
