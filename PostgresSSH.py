@@ -178,20 +178,26 @@ def unfollowUserPrompt():
 def userSearchPrompt():
     global currentUsername
     while (True):
-        print("Search username\email: 1")
+        print("Search for user: 1")
         print("Follow User: 2")
         print("Unfollow User: 3")
         print("Back to main: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
-            #SQL User Query
-            pass
+            searchUsername = None
+            searchEmail = None
+            print("Search by username: 1")
+            searchBy = input(":")
+            if (searchBy == '1'):
+                searchUsername = input("Give a username: ")
+                print(PostgresFunctions.searchUsers(curs, searchUsername, searchEmail))
+            elif (searchBy == '2'):
+                searchEmail = input("Give an email")
+                print(PostgresFunctions.searchUsers(curs, searchUsername, searchEmail))
         elif (cmdlnInput == "2"):
             followUserPrompt()
-            pass
         elif (cmdlnInput == "3"):
             unfollowUserPrompt()
-            pass
         elif (cmdlnInput == "q"):
             break
         else:
@@ -206,7 +212,7 @@ def collectionsPrompt():
         print("Back to main: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
-            PostgresFunctions.showCollections(curs, currentUsername)
+            print(PostgresFunctions.showCollections(curs, currentUsername))
         elif (cmdlnInput == "2"):
             newCollectionName = input("Name your collection: ")
             books = []

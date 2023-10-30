@@ -11,8 +11,15 @@ def createNewUser(curs, username, password, firstname, lastname, email):
 
 def deleteUser(curs, username):
     #print(curs.mogrify("DELETE FROM users WHERE username = %s", (username,)))
-    curs.execute("DELETE FROM users WHERE username = %s", (username,))
+    curs.execute("DELETE FROM users WHERE username = %s", (username))
     return
+
+def searchUsers(curs, username, email):
+    if (username == None):
+        curs.execute("SELECT * FROM users WHERE email = %s", (email))
+    if (email == None):
+        curs.execute("SELECT * FROM users WHERE username = %s", (username))
+    return curs.fetchall()
 
 def followUser(curs, username1, username2):
     #print(curs.mogrify("INSERT INTO userfollow VALUES (%s, %s)", (username1, username2)))
@@ -48,7 +55,7 @@ def createCollection(curs, books, name, username):
 
 def showCollections(curs, username):
     curs.execute("SELECT FROM collection WHERE username = %s" , (username))
-    return
+    return curs.fetchall()
 
 def modifyCollectionName(curs, collectionId, newName, currentUsername):
     curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
