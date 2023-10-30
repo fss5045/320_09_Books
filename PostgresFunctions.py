@@ -29,19 +29,20 @@ def createCollection(curs, books, name):
     return
 
 def showCollections(curs, username):
-    curs.execute("SELECT FROM username WHERE username = %s" , (username))
+    curs.execute("SELECT FROM collection WHERE username = %s" , (username))
     return
 
-def modifyCollectionName(curs, collectionId, username):
-    curs.execute("UPDATE collection SET username = %s WHERE collectionId = %s", (username, collectionId))
+def modifyCollectionName(curs, collectionId, newName, currentUsername):
+    curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
+    if (curs.fetchone() == currentUsername):
+        curs.execute("UPDATE collection SET username = %s WHERE collectionId = %s", (newName, collectionId))
     return
 
-def deleteCollection(curs, collectionId, username, currentUsername):
-    if (username == currentUsername):
-        curs.execute("DELETE FROM collection WHERE collectionId = %s" , (collectionId))
-        return 
-    else:
-        return
+def deleteCollection(curs, collectionId, currentUsername):
+    curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
+    if (curs.fetchone() == currentUsername):
+        curs.execute("DELETE FROM collection WHERE collectionId = %s", (collectionId))
+    return
 
 def searchBooks(curs, name, releaseDate, authors, publishers, genre):
     return
