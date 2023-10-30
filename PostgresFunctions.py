@@ -24,6 +24,19 @@ def unfollowUser(curs, username1, username2):
     curs.execute("DELETE FROM userfollow WHERE usernamefollowed = %s AND usernamefollower = %s", (username1, username2))
     return
 
+def alreadyExistingUser(curs, username):
+    print(curs.mogrify("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s)", (username,)))
+    curs.execute("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s)", (username,))
+    if(curs.fetchone() == None):
+        return False
+    return True
+
+def userMatchPassword(curs, username, password):
+    print(curs.mogrify("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s AND users.password = %s)", (username,password)))
+    curs.execute("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s AND users.password = %s)", (username,password))
+    if (curs.fetchone() == None):
+        return False
+    return True
 def createCollection(curs, books, name):
     return
 
