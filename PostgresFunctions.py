@@ -37,46 +37,36 @@ def userMatchPassword(curs, username, password):
     if (curs.fetchone() == None):
         return False
     return True
-
-def createCollection(curs, books, name, username):
-    curs.execute("INSERT INTO collection (name, username) VALUES (%s, %s)", (name, username))
-    curs.execute("SELECT FROM collection WHERE name = %s AND username = %s", (name, username))
-    collectionId = curs.fetchone()[0]
-    for book in books:
-        curs.execute("INSERT INTO belongsto (collectionid, book) values (%s, %s)", (collectionId, book))
+def createCollection(curs, books, name):
+    curs.execute("INSERT INTO collection VALUES (%s, %s)", (books, name) )
     return
 
 def showCollections(curs, username):
     curs.execute("SELECT FROM collection WHERE username = %s" , (username))
     return
 
-def modifyCollectionName(curs, collectionId, username, newCollectionName):
-    curs.execute("UPDATE collection SET name = %s WHERE collectionId = %s AND username = %s", (newCollectionName, collectionId, username))
+def modifyCollectionName(curs, collectionId, newName, currentUsername):
+    curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
+    if (curs.fetchone() == currentUsername):
+        curs.execute("UPDATE collection SET username = %s WHERE collectionId = %s", (newName, collectionId))
     return
 
-def deleteCollection(curs, collectionId, username):
-    curs.execute("DELETE FROM collection WHERE collectionId = %s AND username = %s" , (collectionId, username))
-    return 
-
-def searchBooks(curs, searchDict):
-    query = "SELECT B.bookid, B.title, B.authors, B.publishers, B.length, B.audience FROM book B UNION SELECT R.bookid, R.rating FROM rates R WHERE B.bookid = R.bookid"
-    for key, value in searchDict.items():
-        query += " AND B." + key + " = '" + value + "'"
-    query += " ORDER BY title ASC, releasedate ASC"
-    # print(curs.mogrify(query))
-    curs.execute(query)
-    return curs.fetchall(), query
-
-def sortBooksByName(curs, query, name, ascending: bool):
+def deleteCollection(curs, collectionId, currentUsername):
+    curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
+    if (curs.fetchone() == currentUsername):
+        curs.execute("DELETE FROM collection WHERE collectionId = %s", (collectionId))
     return
 
-def sortBooksByPublisher(curs, query, publisher, ascending: bool):
+def searchBooks(curs, name, releaseDate, authors, publishers, genre):
     return
 
-def sortBooksByGenre(curs, query, genre, ascending: bool):
+def filterBooksByName(curs, books):
     return
 
-def sortBooksByReleaseYear(curs, quey, ascending: bool):
+def filterBooksByReleaseDate(curs, books, ascending: bool):
+    return
+
+def filterBooksByGenre(curs, books, genre):
     return
 
 def addBookToCollection(curs, collectionId, book):
