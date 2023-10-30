@@ -83,23 +83,26 @@ def bookSortPrompt(originalQuery):
     while (True):
         print("Sort Ascending: 1 (otherwise descending)")
         print("Sort by Name: 2")
-        print("Sort by Release Date: 3")
+        print("Sort by Release Year: 3")
         print("Sort by Publisher: 4")
         print("Sort by Genre: 5")
         print("Add book to your collection: 6")
         print("Back to search: q")
         cmdlnInput = input(":")
-        ascending = False
+        ascending = 'DESC'
         if (cmdlnInput == '1'):
-            ascending = True
+            ascending = 'ASC'
         elif (cmdlnInput == '2'):
-            # PostgresFunctions.sortBook(curs, query, )
+            PostgresFunctions.sortBook(curs, originalQuery, 'name', ascending)
             pass
         elif (cmdlnInput == '3'):
+            PostgresFunctions.sortBook(curs, originalQuery, 'releasedate', ascending)
             pass
         elif (cmdlnInput == '4'):
+            PostgresFunctions.sortBook(curs, originalQuery, 'publisher', ascending)
             pass
         elif (cmdlnInput == '5'):
+            PostgresFunctions.sortBook(curs, originalQuery, 'genre', ascending)
             pass
         elif (cmdlnInput == '6'):
             addBookToCollectionPrompt()

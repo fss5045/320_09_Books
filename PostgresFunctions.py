@@ -66,21 +66,17 @@ def searchBooks(curs, searchDict):
     query = "SELECT B.bookid, B.title, B.authors, B.publishers, B.length, B.audience FROM book B UNION SELECT R.bookid, R.rating FROM rates R WHERE B.bookid = R.bookid"
     for key, value in searchDict.items():
         query += " AND B." + key + " = '" + value + "'"
-    query += " ORDER BY title ASC, releasedate ASC"
+    # query += " ORDER BY title ASC, releasedate ASC"
     # print(curs.mogrify(query))
-    curs.execute(query)
+    curs.execute(query + " ORDER BY B.title ASC, B.releasedate ASC")
     return curs.fetchall(), query
 
-def sortBooksByName(curs, query, name, ascending: bool):
-    return
-
-def sortBooksByPublisher(curs, query, publisher, ascending: bool):
-    return
-
-def sortBooksByGenre(curs, query, genre, ascending: bool):
-    return
-
-def sortBooksByReleaseYear(curs, quey, ascending: bool):
+def sortBooks(curs, query, sorter, ascending):
+    if (sorter == 'releasedate'):
+        query += " ORDER BY YEAR(B." + sorter + ") " + ascending + ", " 
+    else:
+        query += " ORDER BY B." + sorter + " " + ascending + ", "
+    curs.execute(query + "B.title ASC, B.releasedate ASC")
     return
 
 def addBookToCollection(curs, collectionId, book):
