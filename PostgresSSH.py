@@ -64,7 +64,7 @@ def loginPrompt():
             print("Invalid Input")
 
 def addBookToCollectionPrompt():
-    global userId
+    global currentUsername
     bookId = input("Give Books ID")
     #check for valid bookID if invalid go back to filter
     #SQL Query to show users Collections
@@ -146,19 +146,19 @@ def bookSearchPrompt():
             break
 
 def followUserPrompt():
-    global userId
+    global currentUsername
     print("Give the user you want to follow")
-    otherUserID = input("Give UserId: ")
-    #check if its a valid userID
+    otherUsername = input("Give username: ")
+    #check if its a valid username
 
 def unfollowUserPrompt():
-    global userId
+    global currentUsername
     print("Give the user you want to unfollow")
-    otherUserID = input("Give UserId: ")
-    #check if its a valid userID      
+    otherUserName = input("Give username: ")
+    #check if its a valid username      
 
 def userSearchPrompt():
-    global userId
+    global currentUsername
     while (True):
         print("Search username\email: 1")
         print("Follow User: 2")
@@ -180,7 +180,7 @@ def userSearchPrompt():
             print("Invalid Input")
 
 def collectionsPrompt():
-    global userId
+    global currentUsername
     while (True):
         print("Show your collections: 1")
         print("Create Collection: 2")
@@ -239,8 +239,8 @@ try:
         curs = conn.cursor()
         print("Database connection established")
 
-        userId = loginPrompt()
-        if (userId != None):
+        currentUsername = loginPrompt()
+        if (currentUsername != None):
             mainPrompt()
 
         conn.close()

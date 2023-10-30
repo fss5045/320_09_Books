@@ -38,16 +38,23 @@ def userMatchPassword(curs, username, password):
         return False
     return True
 def createCollection(curs, books, name):
+    curs.execute("INSERT INTO collection VALUES (%s, %s)", (books, name) )
     return
 
 def showCollections(curs, username):
+    curs.execute("SELECT FROM username WHERE username = %s" , (username))
     return
 
 def modifyCollectionName(curs, collectionId, username):
+    curs.execute("UPDATE collection SET username = %s WHERE collectionId = %s", (username, collectionId))
     return
 
-def deleteCollection(curs, collectionId, username):
-    return
+def deleteCollection(curs, collectionId, username, currentUsername):
+    if (username == currentUsername):
+        curs.execute("DELETE FROM collection WHERE collectionId = %s" , (collectionId))
+        return 
+    else:
+        return
 
 def searchBooks(curs, name, releaseDate, authors, publishers, genre):
     return
@@ -62,7 +69,9 @@ def filterBooksByGenre(curs, books, genre):
     return
 
 def addBookToCollection(curs, collectionId, book):
+    curs.execute("INSERT INTO belongsto (collectionid, book) values (%s, %s)", (collectionId, book))
     return
 
 def deleteBookFromCollection(curs, collectionId, book):
+    curs.execute("DELETE FROM belongsto WHERE collectionid=%s AND book=%s", (collectionId, book))
     return
