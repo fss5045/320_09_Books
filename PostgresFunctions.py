@@ -50,12 +50,16 @@ def showCollections(curs, username):
     curs.execute("SELECT FROM collection WHERE username = %s" , (username))
     return
 
-def modifyCollectionName(curs, collectionId, username, newCollectionName):
-    curs.execute("UPDATE collection SET name = %s WHERE collectionId = %s AND username = %s", (newCollectionName, collectionId, username))
+def modifyCollectionName(curs, collectionId, newName, currentUsername):
+    curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
+    if (curs.fetchone() == currentUsername):
+        curs.execute("UPDATE collection SET username = %s WHERE collectionId = %s", (newName, collectionId))
     return
 
-def deleteCollection(curs, collectionId, username):
-    curs.execute("DELETE FROM collection WHERE collectionId = %s AND username = %s" , (collectionId, username))
+def deleteCollection(curs, collectionId, currentUsername):
+    curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
+    if (curs.fetchone() == currentUsername):
+        curs.execute("DELETE FROM collection WHERE collectionId = %s", (collectionId))
     return 
 
 def searchBooks(curs, searchDict):
