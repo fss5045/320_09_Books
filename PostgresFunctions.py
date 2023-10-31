@@ -84,7 +84,7 @@ def sortBooks(curs, query, sorter, ascending):
     else:
         query += " ORDER BY B." + sorter + " " + ascending + ", "
     curs.execute(query + "B.title ASC, B.releasedate ASC")
-    return
+    return curs.fetchall()
 
 def addBookToCollection(curs, collectionId, book):
     curs.execute("INSERT INTO belongsto (collectionid, book) values (%s, %s)", (collectionId, book))

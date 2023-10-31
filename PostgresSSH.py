@@ -80,8 +80,9 @@ def printSearchQuery(searchQuery):
 
 def bookSortPrompt(originalQuery):
     #takes the original query and then adds on filters
+    ascending = 'DESC'
     while (True):
-        print("Sort Ascending: 1 (otherwise descending)")
+        print("Sort Ascending / Descending: 1")
         print("Sort by Name: 2")
         print("Sort by Release Year: 3")
         print("Sort by Publisher: 4")
@@ -89,21 +90,26 @@ def bookSortPrompt(originalQuery):
         print("Add book to your collection: 6")
         print("Back to search: q")
         cmdlnInput = input(":")
-        ascending = 'DESC'
         if (cmdlnInput == '1'):
-            ascending = 'ASC'
+            if (ascending == 'ASC'):
+                ascending = 'DESC'
+                print("Sorting Descending")
+            else:
+                ascending = 'ASC'
+                print("Sorting Ascending")
+            continue
         elif (cmdlnInput == '2'):
-            PostgresFunctions.sortBook(curs, originalQuery, 'name', ascending)
-            pass
+            result = PostgresFunctions.sortBook(curs, originalQuery, 'name', ascending)
+            print(result)
         elif (cmdlnInput == '3'):
-            PostgresFunctions.sortBook(curs, originalQuery, 'releasedate', ascending)
-            pass
+            result = PostgresFunctions.sortBook(curs, originalQuery, 'releasedate', ascending)
+            print(result)
         elif (cmdlnInput == '4'):
-            PostgresFunctions.sortBook(curs, originalQuery, 'publisher', ascending)
-            pass
+            result = PostgresFunctions.sortBook(curs, originalQuery, 'publisher', ascending)
+            print(result)
         elif (cmdlnInput == '5'):
-            PostgresFunctions.sortBook(curs, originalQuery, 'genre', ascending)
-            pass
+            result = PostgresFunctions.sortBook(curs, originalQuery, 'genre', ascending)
+            print(result)
         elif (cmdlnInput == '6'):
             addBookToCollectionPrompt()
         elif (cmdlnInput == 'q'):
@@ -144,12 +150,11 @@ def bookSearchPrompt():
             #Check for valid search
             if (len(searchQuery) < 1):
                 print("need at least 1 search parameter")
-                pass
+                continue
             #Search filter/ordering menu
             (fetch, query) = PostgresFunctions.searchBooks(curs, searchQuery)
             print(fetch)
             bookSortPrompt(query)
-            pass
         elif (cmdlnInput == "7"):
             searchQuery = dict()  
         elif (cmdlnInput == "q"):
