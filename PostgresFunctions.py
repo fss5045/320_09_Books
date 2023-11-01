@@ -47,15 +47,14 @@ def userMatchPassword(curs, username, password):
 
 def getBookID(curs, bookTitle):
     curs.execute("SELECT bookid FROM book WHERE title = %s", (bookTitle,))
-    return curs.fetchone()[0]
+    return curs.fetchone()
 
 def createCollection(curs, bookids, name, username):
     collectionId = getNextId(curs, "collection")
     curs.execute(f"INSERT INTO collection (collectionid, name, username) VALUES (\'{collectionId}\', \'{name}\', \'{username}\')")
     curs.execute(f"SELECT * FROM collection WHERE name = \'{name}\' AND username = \'{username}\'")
     for bookid in bookids:
-        print(bookid)
-        curs.execute(f"INSERT INTO belongsto (collectionid, bookid) values (\'{collectionId}\', \'{bookid}\')")
+        curs.execute(f"INSERT INTO belongsto (collectionid, bookid) values (\'{collectionId}\', \'{bookid[0]}\')")
     return
 
 def getNextId(curs, table):
