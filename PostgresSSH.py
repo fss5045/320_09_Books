@@ -20,15 +20,15 @@ def loginPrompt():
             confirmPass = False
             usernm = ""
             psswrd = ""
-            while(alreadyExisting != True):
+            while alreadyExisting != True:
                 usernm = input("Username: ")
-                if(PostgresFunctions.alreadyExistingUser(curs, usernm)):
+                if PostgresFunctions.alreadyExistingUser(curs, usernm):
                     alreadyExisting = True
                 else:
                     print("This username does not exist, please try again or make a new account")
-            while(confirmPass != True):
+            while confirmPass != True:
                 psswrd = input("Password: ")
-                if(PostgresFunctions.userMatchPassword(curs, usernm, psswrd)):
+                if PostgresFunctions.userMatchPassword(curs, usernm, psswrd):
                     confirmPass = True
                 else:
                     print("password does not match, try again")
@@ -38,17 +38,17 @@ def loginPrompt():
             passConfirmation = False
             usernm = ""
             psswrd = ""
-            while(alreadyExisting):
+            while alreadyExisting:
                 usernm = input("Username: ")
-                if(PostgresFunctions.alreadyExistingUser(curs, usernm) == False):
+                if PostgresFunctions.alreadyExistingUser(curs, usernm) == False:
                     alreadyExisting = False
                 else:
                     print("Username taken, please choose a different one")
 
-            while(passConfirmation != True):
+            while passConfirmation != True:
                 psswrd = input("Password: ")
                 psswrdconf = input("Confirm Password: ")
-                if(psswrd == psswrdconf):
+                if psswrd == psswrdconf:
                     passConfirmation = True
                 else:
                     print("Passwords do not match, try again")
@@ -81,7 +81,7 @@ def printSearchQuery(searchQuery):
 def bookSortPrompt(originalQuery):
     #takes the original query and then adds on filters
     ascending = 'DESC'
-    while (True):
+    while True:
         print("Sort Ascending / Descending (Default): 1")
         print("Sort by Name: 2")
         print("Sort by Release Year: 3")
@@ -91,8 +91,8 @@ def bookSortPrompt(originalQuery):
         print("Rate a book: 7")
         print("Back to search: q")
         cmdlnInput = input(":")
-        if (cmdlnInput == '1'):
-            if (ascending == 'ASC'):
+        if cmdlnInput == '1':
+            if ascending == 'ASC':
                 ascending = 'DESC'
                 print("Sorting Descending")
                 result = PostgresFunctions.sortBooks(curs, originalQuery, 'name', ascending)
@@ -103,23 +103,23 @@ def bookSortPrompt(originalQuery):
                 result = PostgresFunctions.sortBooks(curs, originalQuery, 'name', ascending)
                 print(result)
             continue
-        elif (cmdlnInput == '2'):
+        elif cmdlnInput == '2':
             result = PostgresFunctions.sortBooks(curs, originalQuery, 'name', ascending)
             print(result)
-        elif (cmdlnInput == '3'):
+        elif cmdlnInput == '3':
             result = PostgresFunctions.sortBooks(curs, originalQuery, 'releasedate', ascending)
             print(result)
-        elif (cmdlnInput == '4'):
+        elif cmdlnInput == '4':
             result = PostgresFunctions.sortBooks(curs, originalQuery, 'publisher', ascending)
             print(result)
-        elif (cmdlnInput == '5'):
+        elif cmdlnInput == '5':
             result = PostgresFunctions.sortBooks(curs, originalQuery, 'genre', ascending)
             print(result)
-        elif (cmdlnInput == '6'):
+        elif cmdlnInput == '6':
             addBookToCollectionPrompt()
-        elif (cmdlnInput == '7'):
+        elif cmdlnInput == '7':
             rateBookPrompt()
-        elif (cmdlnInput == 'q'):
+        elif cmdlnInput == 'q':
             break
         else:
             print("Invalid Input")
@@ -143,35 +143,35 @@ def bookSearchPrompt():
         print("Current Search: ", end="")
         printSearchQuery(searchQuery)
         cmdlnInput = input(":")
-        if (cmdlnInput == "1"):
+        if cmdlnInput == "1":
             searchQuery["title"] = input("Title: ")
-        elif (cmdlnInput == "2"):
+        elif cmdlnInput == "2":
             searchQuery["releasedate"] = input("Release Date: ")
-        elif (cmdlnInput == "3"):
+        elif cmdlnInput == "3":
             searchQuery["authors"] = input("Author: ")
-        elif (cmdlnInput == "4"):
+        elif cmdlnInput == "4":
             searchQuery["publishers"] = input("Publisher: ")
-        elif (cmdlnInput == "5"):
+        elif cmdlnInput == "5":
             searchQuery["genre"] = input("Genre: ")
-        elif (cmdlnInput == "6"):
+        elif cmdlnInput == "6":
             #Check for valid search
-            if (len(searchQuery) < 1):
+            if len(searchQuery) < 1:
                 print("need at least 1 search parameter")
                 continue
             #Search filter/ordering menu
             (fetch, query) = PostgresFunctions.searchBooks(curs, searchQuery)
             print(fetch)
             bookSortPrompt(query)
-        elif (cmdlnInput == "7"):
+        elif cmdlnInput == "7":
             searchQuery = dict()  
-        elif (cmdlnInput == "q"):
+        elif cmdlnInput == "q":
             break
 
 def followUserPrompt():
     global currentUsername
     print("Give the user you want to follow")
     otherUsername = input("Give username: ")
-    if(PostgresFunctions.alreadyExistingUser(curs, otherUsername)):
+    if PostgresFunctions.alreadyExistingUser(curs, otherUsername):
         # Maybe check if they already follow each other
         PostgresFunctions.followUser(curs,currentUsername,otherUsername)
     else:
@@ -181,7 +181,7 @@ def unfollowUserPrompt():
     global currentUsername
     print("Give the user you want to unfollow")
     otherUsername = input("Give username: ")
-    if (PostgresFunctions.alreadyExistingUser(curs, otherUsername)):
+    if PostgresFunctions.alreadyExistingUser(curs, otherUsername):
         # Maybe check if they already follow each other
         PostgresFunctions.unfollowUser(curs, currentUsername, otherUsername)
     else:
@@ -195,30 +195,30 @@ def userSearchPrompt():
         print("Unfollow User: 3")
         print("Back to main: q")
         cmdlnInput = input(":")
-        if (cmdlnInput == "1"):
+        if cmdlnInput == "1":
             searchUsername = None
             searchEmail = None
             print("Search by username: 1")
             print("Search by email: 2")
             searchBy = input(":")
-            if (searchBy == '1'):
+            if searchBy == '1':
                 searchUsername = input("Give a username: ")
                 print(PostgresFunctions.searchUsers(curs, searchUsername, searchEmail))
-            elif (searchBy == '2'):
+            elif searchBy == '2':
                 searchEmail = input("Give an email")
                 print(PostgresFunctions.searchUsers(curs, searchUsername, searchEmail))
-        elif (cmdlnInput == "2"):
+        elif cmdlnInput == "2":
             followUserPrompt()
-        elif (cmdlnInput == "3"):
+        elif cmdlnInput == "3":
             unfollowUserPrompt()
-        elif (cmdlnInput == "q"):
+        elif cmdlnInput == "q":
             break
         else:
             print("Invalid Input")
 
 def readBookPrompt(bookId):
     global currentUsername
-    if (bookId != None):
+    if bookId != None:
         bookId = input("Give bookID to read: ")
     pages = input("How many pages did you read: ")
     PostgresFunctions.readBooks(curs, currentUsername, bookId, pages)
@@ -232,15 +232,15 @@ def selectedCollectionPrompt(collectionId):
         print("Read selected book from collection: 2")
         print("Read random book from collection: 3")
         cmdlnInput = input(":")
-        if (cmdlnInput == "1"):
+        if cmdlnInput == "1":
             rateBookPrompt()
-        elif (cmdlnInput == "2"):
+        elif cmdlnInput == "2":
             readBookPrompt(None)
-        elif (cmdlnInput == "3"):
+        elif cmdlnInput == "3":
             #select random book from collection
             #readBookPrompt(randBookId)
             pass
-        elif (cmdlnInput == "q"):
+        elif cmdlnInput == "q":
             break
         else:
             print("Invalid Input")
@@ -254,30 +254,42 @@ def collectionsPrompt():
         print("Select A Collections: 4")
         print("Back to main: q")
         cmdlnInput = input(":")
-        if (cmdlnInput == "1"):
+        if cmdlnInput == "1":
             print(PostgresFunctions.showCollections(curs, currentUsername))
-        elif (cmdlnInput == "2"):
+
+        elif cmdlnInput == "2":
             newCollectionName = input("Name your collection: ")
             bookIds = []
             print("Give books to add to your new collection, enter q to finish")
             while (True):
                 book = input("Enter a name of a book to add: ")
-                if (book == 'q'):
+                if book == 'q':
                     break
                 else:
                     bookId = PostgresFunctions.getBookID(curs, book)
-                    if (bookId == None):
+                    if bookId == None:
                         print("Book does not exist, try again")
                     else:
                         bookIds.append(bookId)
             PostgresFunctions.createCollection(curs, bookIds, newCollectionName, currentUsername)
-        elif (cmdlnInput == "3"):
-            delCollectionId = input("CollectionId to delete: ")
-            PostgresFunctions.deleteCollection(curs, delCollectionId, currentUsername)
-        elif (cmdlnInput == "4"):
-            collectionId = input("Collection Id to select: ")
-            selectedCollectionPrompt(collectionId)
-        elif (cmdlnInput == "q"):
+
+        elif cmdlnInput == "3":
+            delCollectionTitle = input("Collection to delete: ")
+            delCollectionId = PostgresFunctions.getCollectionId(curs, delCollectionTitle, currentUsername)
+            if delCollectionId == None:
+                print("Collection does not exist")
+            else:
+                PostgresFunctions.deleteCollection(curs, delCollectionId)
+
+        elif cmdlnInput == "4":
+            CollectionTitle = input("Collection to select: ")
+            CollectionId = PostgresFunctions.getCollectionId(curs, CollectionTitle, currentUsername)
+            if CollectionId == None:
+                print("Collection does not exist")
+            else:
+                selectedCollectionPrompt(CollectionId)
+
+        elif cmdlnInput == "q":
             break
         else:
             print("Invalid Input")

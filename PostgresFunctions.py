@@ -15,9 +15,9 @@ def deleteUser(curs, username):
     return
 
 def searchUsers(curs, username, email):
-    if (username == None):
+    if username == None:
         curs.execute(f"SELECT * FROM users WHERE email = \'{email}\'")
-    if (email == None):
+    if email == None:
         curs.execute(f"SELECT * FROM users WHERE username = \'{username}\'")
     return curs.fetchall()
 
@@ -34,27 +34,30 @@ def unfollowUser(curs, username1, username2):
 def alreadyExistingUser(curs, username):
     print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')"))
     curs.execute(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')")
-    if(curs.fetchone() == None):
+    if curs.fetchone() == None:
         return False
     return True
 
 def userMatchPassword(curs, username, password):
     print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')"))
     curs.execute(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')", (username,password))
-    if (curs.fetchone() == None):
+    if curs.fetchone() == None:
         return False
     return True
 
 def getBookID(curs, bookTitle):
     curs.execute("SELECT bookid FROM book WHERE title = %s", (bookTitle,))
-    return curs.fetchone()
+    result = curs.fetchone()
+    if result == None:
+        return result
+    return result[0]
 
 def createCollection(curs, bookids, name, username):
     collectionId = getNextId(curs, "collection")
     curs.execute(f"INSERT INTO collection (collectionid, name, username) VALUES (\'{collectionId}\', \'{name}\', \'{username}\')")
     curs.execute(f"SELECT * FROM collection WHERE name = \'{name}\' AND username = \'{username}\'")
     for bookid in bookids:
-        curs.execute(f"INSERT INTO belongsto (collectionid, bookid) values (\'{collectionId}\', \'{bookid[0]}\')")
+        curs.execute(f"INSERT INTO belongsto (collectionid, bookid) values (\'{collectionId}\', \'{bookid}\')")
     return
 
 def getNextId(curs, table):
@@ -71,15 +74,20 @@ def showCollections(curs, username):
 
 def modifyCollectionName(curs, collectionId, newName, currentUsername):
     curs.execute(f"SELECT username FROM collection WHERE collectionId = \'{collectionId}\'")
-    if (curs.fetchone() == currentUsername):
+    if curs.fetchone() == currentUsername:
         curs.execute(f"UPDATE collection SET username = \'{newName}\' WHERE collectionId = \'{collectionId}\'")
     return
 
-def deleteCollection(curs, collectionId, currentUsername):
-    curs.execute(f"SELECT username FROM collection WHERE collectionId = \'{collectionId}\'")
-    if (curs.fetchone() == currentUsername):
-        curs.execute(f"DELETE FROM collection WHERE collectionId = \'{collectionId}\'")
-    return 
+def deleteCollection(curs, collectionId):
+    curs.execute(f"DELETE FROM collection WHERE collectionId = \'{collectionId}\'")
+    return
+
+def getCollectionId(curs, title, currentUsername):
+    curs.execute(f"SELECT collectionid FROM collection WHERE name = \'{title}\' AND username = \'{currentUsername}\'")
+    result = curs.fetchone()
+    if result == None:
+        return result
+    return result[0]
 
 def searchBooks(curs, searchDict):
     query = """WITH books_refined AS
@@ -114,7 +122,7 @@ def searchBooks(curs, searchDict):
     return curs.fetchall(), query
 
 def sortBooks(curs, query, sorter, ascending):
-    if (sorter == 'releasedate'):
+    if sorter == 'releasedate':
         query += " ORDER BY date_trunc('year', " + sorter + ") " + ascending + ", " 
     else:
         query += " ORDER BY " + sorter + " " + ascending + ", "
