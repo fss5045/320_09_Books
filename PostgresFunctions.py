@@ -45,16 +45,29 @@ def userMatchPassword(curs, username, password):
         return False
     return True
 
-def createCollection(curs, books, name, username):
-    curs.execute(f"INSERT INTO collection (name, username) VALUES (\'{name}\', \'{username}\')")
-    curs.execute(f"SELECT FROM collection WHERE name = \'{name}\' AND username = \'{username}\'")
-    collectionId = curs.fetchone()[0]
-    for book in books:
-        curs.execute(f"INSERT INTO belongsto (collectionid, book) values (\'{collectionId}\', \'{book}\')")
+def getBookID(curs, bookTitle):
+    curs.execute("SELECT bookid FROM book WHERE title = %s", (bookTitle,))
+    return curs.fetchone()[0]
+
+def createCollection(curs, bookids, name, username):
+    collectionId = getNextId(curs, "collection")
+    curs.execute(f"INSERT INTO collection (collectionid, name, username) VALUES (\'{collectionId}\', \'{name}\', \'{username}\')")
+    curs.execute(f"SELECT * FROM collection WHERE name = \'{name}\' AND username = \'{username}\'")
+    for bookid in bookids:
+        print(bookid)
+        curs.execute(f"INSERT INTO belongsto (collectionid, bookid) values (\'{collectionId}\', \'{bookid}\')")
     return
 
+def getNextId(curs, table):
+    id = table+"id"
+    query = "SELECT MAX("+id+") FROM " + table
+    #print(curs.mogrify(query))
+    curs.execute(query)
+    result = curs.fetchone()
+    return result[0] + 1
+
 def showCollections(curs, username):
-    curs.execute(f"SELECT FROM collection WHERE username = \'{username}\'")
+    curs.execute(f"SELECT * FROM collection WHERE username = \'{username}\'")
     return curs.fetchall()
 
 def modifyCollectionName(curs, collectionId, newName, currentUsername):
