@@ -195,6 +195,7 @@ def userSearchPrompt():
             searchUsername = None
             searchEmail = None
             print("Search by username: 1")
+            print("Search by email: 2")
             searchBy = input(":")
             if (searchBy == '1'):
                 searchUsername = input("Give a username: ")
@@ -212,10 +213,11 @@ def userSearchPrompt():
             print("Invalid Input")
 
 def readBookPrompt(bookId):
+    global currentUsername
     if (bookId != None):
         bookId = input("Give bookID to read: ")
     pages = input("How many pages did you read: ")
-    #SQL Read book function 
+    PostgresFunctions.readBooks(curs, currentUsername, bookId, pages)
     return
 
 def selectedCollectionPrompt(collectionId):
@@ -265,7 +267,8 @@ def collectionsPrompt():
             delCollectionId = input("CollectionId to delete: ")
             PostgresFunctions.deleteCollection(curs, delCollectionId, currentUsername)
         elif (cmdlnInput == "4"):
-            rateBookPrompt()
+            collectionId = input("Collection Id to select: ")
+            selectedCollectionPrompt(collectionId)
         elif (cmdlnInput == "q"):
             break
         else:

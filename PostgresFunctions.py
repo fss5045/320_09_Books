@@ -6,67 +6,67 @@ def showBook(curs):
 def createNewUser(curs, username, password, firstname, lastname, email):
     today = date.today()
     #print(curs.mogrify("INSERT INTO users VALUES (%s, %s, %s, %s, %s, %s, %s)", (username, firstname, lastname, email, today, today, password)))
-    curs.execute("INSERT INTO users VALUES (%s, %s, %s, %s, %s, %s, %s)", (username, firstname, lastname, email, today, today, password))
+    curs.execute(f"INSERT INTO users VALUES (\'{username}\', \'{firstname}\', \'{lastname}\', \'{email}\', \'{today}\', \'{today}\', \'{password}\')", (username, firstname, lastname, email, today, today, password))
     return
 
 def deleteUser(curs, username):
     #print(curs.mogrify("DELETE FROM users WHERE username = %s", (username,)))
-    curs.execute("DELETE FROM users WHERE username = %s", (username))
+    curs.execute(f"DELETE FROM users WHERE username = \'{username}\'")
     return
 
 def searchUsers(curs, username, email):
     if (username == None):
-        curs.execute("SELECT * FROM users WHERE email = %s", (email))
+        curs.execute(f"SELECT * FROM users WHERE email = \'{email}\'")
     if (email == None):
-        curs.execute("SELECT * FROM users WHERE username = %s", (username))
+        curs.execute(f"SELECT * FROM users WHERE username = \'{username}\'")
     return curs.fetchall()
 
 def followUser(curs, username1, username2):
     #print(curs.mogrify("INSERT INTO userfollow VALUES (%s, %s)", (username1, username2)))
-    curs.execute("INSERT INTO userfollow VALUES (%s, %s)", (username1, username2))
+    curs.execute(f"INSERT INTO userfollow VALUES (\'{username1}\', \'{username2}\')")
     return
 
 def unfollowUser(curs, username1, username2):
     #print(curs.mogrify("DELETE FROM userfollow WHERE usernamefollowed = %s AND usernamefollower = %s", (username1, username2)))
-    curs.execute("DELETE FROM userfollow WHERE usernamefollowed = %s AND usernamefollower = %s", (username1, username2))
+    curs.execute(f"DELETE FROM userfollow WHERE usernamefollowed = \'{username1}\' AND usernamefollower = \'{username2}\'")
     return
 
 def alreadyExistingUser(curs, username):
-    print(curs.mogrify("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s)", (username,)))
-    curs.execute("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s)", (username,))
+    print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')"))
+    curs.execute(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')")
     if(curs.fetchone() == None):
         return False
     return True
 
 def userMatchPassword(curs, username, password):
-    print(curs.mogrify("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s AND users.password = %s)", (username,password)))
-    curs.execute("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s AND users.password = %s)", (username,password))
+    print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')"))
+    curs.execute(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')", (username,password))
     if (curs.fetchone() == None):
         return False
     return True
 
 def createCollection(curs, books, name, username):
-    curs.execute("INSERT INTO collection (name, username) VALUES (%s, %s)", (name, username))
-    curs.execute("SELECT FROM collection WHERE name = %s AND username = %s", (name, username))
+    curs.execute(f"INSERT INTO collection (name, username) VALUES (\'{name}\', \'{username}\')")
+    curs.execute(f"SELECT FROM collection WHERE name = \'{name}\' AND username = \'{username}\'")
     collectionId = curs.fetchone()[0]
     for book in books:
-        curs.execute("INSERT INTO belongsto (collectionid, book) values (%s, %s)", (collectionId, book))
+        curs.execute(f"INSERT INTO belongsto (collectionid, book) values (\'{collectionId}\', \'{book}\')")
     return
 
 def showCollections(curs, username):
-    curs.execute("SELECT FROM collection WHERE username = %s" , (username))
+    curs.execute(f"SELECT FROM collection WHERE username = \'{username}\'")
     return curs.fetchall()
 
 def modifyCollectionName(curs, collectionId, newName, currentUsername):
-    curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
+    curs.execute(f"SELECT username FROM collection WHERE collectionId = \'{collectionId}\'")
     if (curs.fetchone() == currentUsername):
-        curs.execute("UPDATE collection SET username = %s WHERE collectionId = %s", (newName, collectionId))
+        curs.execute(f"UPDATE collection SET username = \'{newName}\' WHERE collectionId = \'{collectionId}\'")
     return
 
 def deleteCollection(curs, collectionId, currentUsername):
-    curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
+    curs.execute(f"SELECT username FROM collection WHERE collectionId = \'{collectionId}\'")
     if (curs.fetchone() == currentUsername):
-        curs.execute("DELETE FROM collection WHERE collectionId = %s", (collectionId))
+        curs.execute(f"DELETE FROM collection WHERE collectionId = \'{collectionId}\'")
     return 
 
 def searchBooks(curs, searchDict):
