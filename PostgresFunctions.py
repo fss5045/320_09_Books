@@ -111,16 +111,16 @@ def sortBooks(curs, query, sorter, ascending):
     return curs.fetchall()
 
 def addBookToCollection(curs, collectionId, book):
-    curs.execute("INSERT INTO belongsto (collectionid, book) values (\'{collectionId}\', \'{book}\')", (collectionId, book))
+    curs.execute(f"INSERT INTO belongsto (collectionid, book) values (\'{collectionId}\', \'{book}\')")
     return
 
 def readBooks(curs, currentUsername, bookId, pagesRead):
     curs.execute("SELECT NOW()")
     current_time = curs.fetchOne()
-    curs.execute("INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{current_time}\', \'{pagesRead}\')", (currentUsername, bookId, current_time, pagesRead))
+    curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{current_time}\', \'{pagesRead}\')")
 
 def rateBook(curs, username, bookId, rating):
-    curs.execute("INSERT INTO rates (username, bookid, rating) values (\'{username}\', \'{bookId}\', \'{rating}\')")
+    curs.execute(f"INSERT INTO rates (username, bookid, rating) values (\'{username}\', \'{bookId}\', \'{rating}\')")
     return
 
 def deleteBookFromCollection(curs, collectionId, book):
