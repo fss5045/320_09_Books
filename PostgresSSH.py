@@ -217,7 +217,9 @@ def collectionsPrompt():
         print("Back to main: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
-            print(PostgresFunctions.showCollections(curs, currentUsername))
+            collections = PostgresFunctions.showCollections(curs, currentUsername)
+            for collection in collections:
+                print(collection)
         elif (cmdlnInput == "2"):
             newCollectionName = input("Name your collection: ")
             books = []
@@ -226,12 +228,19 @@ def collectionsPrompt():
                 book = input("Enter a name of a book to add: ")
                 if (book == 'q'):
                     break
+                bookID = PostgresFunctions.getBookID(curs, book)
+                if (bookID == None):
+                    print("Book does not exist, try again")
                 else:
-                    books.append(books)
+                    books.append(bookID)
             PostgresFunctions.createCollection(curs, books, newCollectionName, currentUsername)
         elif (cmdlnInput == "3"):
-            delCollectionId = input("CollectionId to delete: ")
-            PostgresFunctions.deleteCollection(curs, delCollectionId, currentUsername)
+            delCollectionTitle = input("Collection to delete: ")
+            delCollectionId = PostgresFunctions.getCollectionID(curs, delCollectionTitle, currentUsername)
+            if(delCollectionId == None):
+                print("Collection does not exist")
+            else:
+                PostgresFunctions.deleteCollection(curs, delCollectionId)
         if (cmdlnInput == "q"):
             break
 

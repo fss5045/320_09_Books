@@ -32,29 +32,29 @@ def unfollowUser(curs, username1, username2):
     return
 
 def alreadyExistingUser(curs, username):
-    print(curs.mogrify("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s)", (username,)))
+    #print(curs.mogrify("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s)", (username,)))
     curs.execute("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s)", (username,))
     if(curs.fetchone() == None):
         return False
     return True
 
 def userMatchPassword(curs, username, password):
-    print(curs.mogrify("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s AND users.password = %s)", (username,password)))
+    #print(curs.mogrify("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s AND users.password = %s)", (username,password)))
     curs.execute("SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = %s AND users.password = %s)", (username,password))
     if (curs.fetchone() == None):
         return False
     return True
 
 def createCollection(curs, books, name, username):
-    curs.execute("INSERT INTO collection (name, username) VALUES (%s, %s)", (name, username))
+    collectionId = getNextId(curs, "collection")
+    curs.execute("INSERT INTO collection (collectionid, name, username) VALUES (%s, %s, %s)", (collectionId, name, username))
     curs.execute("SELECT FROM collection WHERE name = %s AND username = %s", (name, username))
-    collectionId = curs.fetchone()[0]
     for book in books:
-        curs.execute("INSERT INTO belongsto (collectionid, book) values (%s, %s)", (collectionId, book))
+        curs.execute("INSERT INTO belongsto (collectionid, bookid) values (%s, %s)", (collectionId, book))
     return
 
 def showCollections(curs, username):
-    curs.execute("SELECT FROM collection WHERE username = %s" , (username))
+    curs.execute("SELECT name FROM collection WHERE username = %s" , (username,))
     return curs.fetchall()
 
 def modifyCollectionName(curs, collectionId, newName, currentUsername):
@@ -63,10 +63,11 @@ def modifyCollectionName(curs, collectionId, newName, currentUsername):
         curs.execute("UPDATE collection SET username = %s WHERE collectionId = %s", (newName, collectionId))
     return
 
-def deleteCollection(curs, collectionId, currentUsername):
-    curs.execute("SELECT username FROM collection WHERE collectionId = %s" , (collectionId))
-    if (curs.fetchone() == currentUsername):
-        curs.execute("DELETE FROM collection WHERE collectionId = %s", (collectionId))
+def deleteCollection(curs, collectionId):
+    # Don't need to add a check for deleteCollection because the check was refactored to
+    # In the getCollectionID function, this makes it so that
+    # the currentUser cant delete collections that are not their own
+    curs.execute("DELETE FROM collection WHERE collectionId = %s", (collectionId))
     return 
 
 def searchBooks(curs, searchDict):
@@ -93,3 +94,19 @@ def addBookToCollection(curs, collectionId, book):
 def deleteBookFromCollection(curs, collectionId, book):
     curs.execute("DELETE FROM belongsto WHERE collectionid=%s AND book=%s", (collectionId, book))
     return
+
+def getBookID(curs, bookTitle):
+    curs.execute("SELECT bookid FROM book WHERE title = %s", (bookTitle,))
+    return curs.fetchone()
+
+def getCollectionID(curs, collectionTitle, currentUsername):
+    curs.execute("SELECT collectionid FROM collection WHERE name = %s AND username = %s", (collectionTitle,currentUsername))
+    return curs.fetchone()
+
+def getNextId(curs, table):
+    id = table+"id"
+    query = "SELECT MAX("+id+") FROM " + table
+    #print(curs.mogrify(query))
+    curs.execute(query)
+    result = curs.fetchone()
+    return result[0] + 1
