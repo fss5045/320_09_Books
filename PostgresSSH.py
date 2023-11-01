@@ -82,7 +82,7 @@ def bookSortPrompt(originalQuery):
     #takes the original query and then adds on filters
     ascending = 'DESC'
     while (True):
-        print("Sort Ascending / Descending: 1")
+        print("Sort Ascending / Descending (Default): 1")
         print("Sort by Name: 2")
         print("Sort by Release Year: 3")
         print("Sort by Publisher: 4")
@@ -95,21 +95,25 @@ def bookSortPrompt(originalQuery):
             if (ascending == 'ASC'):
                 ascending = 'DESC'
                 print("Sorting Descending")
+                result = PostgresFunctions.sortBooks(curs, originalQuery, 'name', ascending)
+                print(result)
             else:
                 ascending = 'ASC'
                 print("Sorting Ascending")
+                result = PostgresFunctions.sortBooks(curs, originalQuery, 'name', ascending)
+                print(result)
             continue
         elif (cmdlnInput == '2'):
-            result = PostgresFunctions.sortBook(curs, originalQuery, 'name', ascending)
+            result = PostgresFunctions.sortBooks(curs, originalQuery, 'name', ascending)
             print(result)
         elif (cmdlnInput == '3'):
-            result = PostgresFunctions.sortBook(curs, originalQuery, 'releasedate', ascending)
+            result = PostgresFunctions.sortBooks(curs, originalQuery, 'releasedate', ascending)
             print(result)
         elif (cmdlnInput == '4'):
-            result = PostgresFunctions.sortBook(curs, originalQuery, 'publisher', ascending)
+            result = PostgresFunctions.sortBooks(curs, originalQuery, 'publisher', ascending)
             print(result)
         elif (cmdlnInput == '5'):
-            result = PostgresFunctions.sortBook(curs, originalQuery, 'genre', ascending)
+            result = PostgresFunctions.sortBooks(curs, originalQuery, 'genre', ascending)
             print(result)
         elif (cmdlnInput == '6'):
             addBookToCollectionPrompt()
@@ -130,8 +134,8 @@ def bookSearchPrompt():
         print("Enter following search parameters at least 1 must be non empty")
         print("Title: 1")
         print("Release Date: 2")
-        print("Author: 3")
-        print("Publisher: 4")
+        print("Authors: 3")
+        print("Publishers: 4")
         print("Genre: 5")
         print("Enter Search: 6")
         print("Clear Search: 7")
@@ -144,9 +148,9 @@ def bookSearchPrompt():
         elif (cmdlnInput == "2"):
             searchQuery["releasedate"] = input("Release Date: ")
         elif (cmdlnInput == "3"):
-            searchQuery["author"] = input("Author: ")
+            searchQuery["authors"] = input("Author: ")
         elif (cmdlnInput == "4"):
-            searchQuery["publisher"] = input("Publisher: ")
+            searchQuery["publishers"] = input("Publisher: ")
         elif (cmdlnInput == "5"):
             searchQuery["genre"] = input("Genre: ")
         elif (cmdlnInput == "6"):
