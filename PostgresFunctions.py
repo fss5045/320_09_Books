@@ -69,10 +69,6 @@ def deleteCollection(curs, collectionId, currentUsername):
         curs.execute("DELETE FROM collection WHERE collectionId = %s", (collectionId))
     return 
 
-def rateBook(curs, username, bookId, rating):
-    curs.execute("INSERT INTO rates (username, bookid, rating) values (%s, %s, %s)", username, bookId, rating)
-    return
-
 def searchBooks(curs, searchDict):
     # query = """SELECT B.bookid, B.title,
     #             (SELECT string_agg(CONCAT(firstname, ' ', lastname), ', ') FROM contributor C, writes W
@@ -122,6 +118,11 @@ def sortBooks(curs, query, sorter, ascending):
 def addBookToCollection(curs, collectionId, book):
     curs.execute("INSERT INTO belongsto (collectionid, book) values (%s, %s)", (collectionId, book))
     return
+
+def readBooks(curs, currentUsername, bookId, pagesRead):
+    curs.execute("SELECT NOW()")
+    current_time = curs.fetchOne()
+    curs.execute("INSERT INTO reads (username , bookid, readdatetime, pages) values (%s, %s, %s, %s)", (currentUsername, bookId, current_time, pagesRead))
 
 def deleteBookFromCollection(curs, collectionId, book):
     curs.execute("DELETE FROM belongsto WHERE collectionid=%s AND book=%s", (collectionId, book))
