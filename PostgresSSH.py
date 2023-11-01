@@ -211,13 +211,41 @@ def userSearchPrompt():
         else:
             print("Invalid Input")
 
+def readBookPrompt(bookId):
+    if (bookId != None):
+        bookId = input("Give bookID to read: ")
+    pages = input("How many pages did you read: ")
+    #SQL Read book function 
+    return
+
+def selectedCollectionPrompt(collectionId):
+    global currentUsername
+    #Show the selected collection
+    while (True):
+        print("Rate book from collection: 1")
+        print("Read selected book from collection: 2")
+        print("Read random book from collection: 3")
+        cmdlnInput = input(":")
+        if (cmdlnInput == "1"):
+            rateBookPrompt()
+        elif (cmdlnInput == "2"):
+            readBookPrompt(None)
+        elif (cmdlnInput == "3"):
+            #select random book from collection
+            #readBookPrompt(randBookId)
+            pass
+        elif (cmdlnInput == "q"):
+            break
+        else:
+            print("Invalid Input")
+
 def collectionsPrompt():
     global currentUsername
     while (True):
         print("Show your collections: 1")
         print("Create Collection: 2")
         print("Delete Collection: 3")
-        print("Rate a book: 4")
+        print("Select A Collections: 4")
         print("Back to main: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
