@@ -124,6 +124,10 @@ def readBooks(curs, currentUsername, bookId, pagesRead):
     current_time = curs.fetchOne()
     curs.execute("INSERT INTO reads (username , bookid, readdatetime, pages) values (%s, %s, %s, %s)", (currentUsername, bookId, current_time, pagesRead))
 
+def rateBook(curs, username, bookId, rating):
+    curs.execute("INSERT INTO rates (username, bookid, rating) values (%s, %s, %s)", username, bookId, rating)
+    return
+
 def deleteBookFromCollection(curs, collectionId, book):
     curs.execute("DELETE FROM belongsto WHERE collectionid=%s AND book=%s", (collectionId, book))
     return
