@@ -69,6 +69,10 @@ def deleteCollection(curs, collectionId, currentUsername):
         curs.execute("DELETE FROM collection WHERE collectionId = %s", (collectionId))
     return 
 
+def rateBook(curs, username, bookId, rating):
+    curs.execute("INSERT INTO rates (username, bookid, rating) values (%s, %s, %s)", username, bookId, rating)
+    return
+
 def searchBooks(curs, searchDict):
     query = "SELECT B.bookid, B.title, B.authors, B.publishers, B.length, B.audience FROM book B UNION SELECT R.bookid, R.rating FROM rates R WHERE B.bookid = R.bookid"
     for key, value in searchDict.items():

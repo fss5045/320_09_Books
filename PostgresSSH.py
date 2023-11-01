@@ -88,6 +88,7 @@ def bookSortPrompt(originalQuery):
         print("Sort by Publisher: 4")
         print("Sort by Genre: 5")
         print("Add book to your collection: 6")
+        print("Rate a book: 7")
         print("Back to search: q")
         cmdlnInput = input(":")
         if (cmdlnInput == '1'):
@@ -112,6 +113,8 @@ def bookSortPrompt(originalQuery):
             print(result)
         elif (cmdlnInput == '6'):
             addBookToCollectionPrompt()
+        elif (cmdlnInput == '7'):
+            rateBookPrompt()
         elif (cmdlnInput == 'q'):
             break
         else:
@@ -214,6 +217,7 @@ def collectionsPrompt():
         print("Show your collections: 1")
         print("Create Collection: 2")
         print("Delete Collection: 3")
+        print("Rate a book: 4")
         print("Back to main: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
@@ -232,15 +236,25 @@ def collectionsPrompt():
         elif (cmdlnInput == "3"):
             delCollectionId = input("CollectionId to delete: ")
             PostgresFunctions.deleteCollection(curs, delCollectionId, currentUsername)
-        if (cmdlnInput == "q"):
+        elif (cmdlnInput == "4"):
+            rateBookPrompt()
+        elif (cmdlnInput == "q"):
             break
+        else:
+            print("Invalid Input")
+
+def rateBookPrompt():
+    global currentUsername
+    print("Give a book to rate")
+    bookId = input("Book ID to rate: ")
+    rating = input("Your rating")
+    PostgresFunctions.rateBook(curs, currentUsername, bookId, rating)
 
 def mainPrompt():
     while (True):
         print("Search Books: 1")
         print("Search Users: 2")
         print("Go To Collections: 3")
-        print("Go To Followers: 4")
         print("Exit and log out: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
@@ -251,6 +265,8 @@ def mainPrompt():
             collectionsPrompt()
         elif (cmdlnInput == "q"):
             break
+        else:
+            print("Invalid Input")
 
 try:
     with SSHTunnelForwarder(('starbug.cs.rit.edu', 22),
