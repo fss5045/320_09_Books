@@ -74,11 +74,40 @@ def rateBook(curs, username, bookId, rating):
     return
 
 def searchBooks(curs, searchDict):
-    query = "SELECT B.bookid, B.title, B.authors, B.publishers, B.length, B.audience FROM book B UNION SELECT R.bookid, R.rating FROM rates R WHERE B.bookid = R.bookid"
+    # query = """SELECT B.bookid, B.title,
+    #             (SELECT string_agg(CONCAT(firstname, ' ', lastname), ', ') FROM contributor C, writes W
+    #                 WHERE (C.contributorid = W.contributorid) AND (W.bookid = B.bookid)
+    #                 GROUP BY B.bookid) AS "authors",
+    #             (SELECT string_agg(CONCAT(firstname, ' ', lastname), ', ') FROM contributor C, publishes P
+    #                 WHERE (C.contributorid = P.contributorid) AND (P.bookid = B.bookid)
+    #                 GROUP BY B.bookid) AS "publishers",
+    #             B.length AS pages, B.audience,
+    #             (SELECT AVG(rating) FROM rates R WHERE B.bookid = R.bookid) AS "Average Rating"
+    #             FROM book B"""
+    start = """SELECT B.bookid, B.title, """
+    author = """(SELECT string_agg(CONCAT(firstname, ' ', lastname), ', ') FROM contributor C, writes W
+                    WHERE (C.contributorid = W.contributorid) AND (W.bookid = B.bookid)
+                    GROUP BY B.bookid) AS "authors", """
+    publisher = """(SELECT string_agg(CONCAT(firstname, ' ', lastname), ', ') FROM contributor C, publishes P
+                    WHERE (C.contributorid = P.contributorid) AND (P.bookid = B.bookid)
+                    GROUP BY B.bookid) AS "publishers", """
+    genre = """"""
+    pagesAudience= """B.length AS pages, B.audience, """
+    where = "FROM book B WHERE "
     for key, value in searchDict.items():
-        query += " AND B." + key + " = '" + value + "'"
+        if key == "title":
+            where += "B." + key + " LIKE '%" + value + "%'"
+        if key == "releasedate":
+            where += "B." + key + " = '" + value + "'"
+        if key == "author":
+            author.replace("")
+        if key == "publisher":
+            publisher.replace("")
+        if key == "genre":
+            genre.replace("")
+    query = start + author + publisher + pagesAudience + genre + where
     # query += " ORDER BY title ASC, releasedate ASC"
-    # print(curs.mogrify(query))
+    # print(curs.mogrify(query + " ORDER BY B.title ASC, B.releasedate ASC"))
     curs.execute(query + " ORDER BY B.title ASC, B.releasedate ASC")
     return curs.fetchall(), query
 

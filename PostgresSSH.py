@@ -142,7 +142,7 @@ def bookSearchPrompt():
         if (cmdlnInput == "1"):
             searchQuery["title"] = input("Title: ")
         elif (cmdlnInput == "2"):
-            searchQuery["release"] = input("Release Date: ")
+            searchQuery["releasedate"] = input("Release Date: ")
         elif (cmdlnInput == "3"):
             searchQuery["author"] = input("Author: ")
         elif (cmdlnInput == "4"):
