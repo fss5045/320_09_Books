@@ -321,7 +321,7 @@ def collectionsPrompt():
 def rateBookPrompt():
     global currentUsername
     print("Give a book to rate")
-    bookId = input("Book ID to rate: ")
+    bookId = input("Book Name: ")
     rating = input("Your rating")
     PostgresFunctions.rateBook(curs, currentUsername, bookId, rating)
 

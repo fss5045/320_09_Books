@@ -137,8 +137,16 @@ def readBooks(curs, currentUsername, bookId, pagesRead):
     current_time = curs.fetchOne()
     curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{current_time}\', \'{pagesRead}\')")
 
-def rateBook(curs, username, bookId, rating):
-    curs.execute(f"INSERT INTO rates (username, bookid, rating) values (\'{username}\', \'{bookId}\', \'{rating}\')")
+def rateBook(curs, username, bookName, rating):
+    bookId = getBookID(curs, bookName)
+
+    curs.execute(f"SELECT username, bookid FROM rates WHERE username = \'{username}\' AND bookid = \'{bookId}\' ")
+    list_of_rates = curs.fetchall()
+    for rates in list_of_rates:
+        if rates[1] == bookId and rates[0] == username:
+           curs.execute(f"UPDATE rates SET rating = \'{rating}\' WHERE username = \'{username}\' AND bookid = \'{bookId}\'")
+           return
+    curs.execute(f"INSERT INTO rates (username, bookid, rating) values (\'{username}\', \'{bookId}\', \'{rating}\')")      
     return
 
 def deleteBookFromCollection(curs, collectionId, book):
