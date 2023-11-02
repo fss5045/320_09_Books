@@ -21,44 +21,67 @@ def loginPrompt():
             confirmPass = False
             usernm = ""
             psswrd = ""
+            maxAttempts = 3
             while alreadyExisting != True:
                 usernm = input("Username: ")
                 if PostgresFunctions.alreadyExistingUser(curs, usernm):
                     alreadyExisting = True
                 else:
+                    maxAttempts = maxAttempts - 1
                     print("This username does not exist, please try again or make a new account")
+                if maxAttempts == 0:
+                    print("Ran out of attempts")
+                    break
+
+            maxAttempts = 3
             while confirmPass != True:
                 psswrd = input("Password: ")
                 if PostgresFunctions.userMatchPassword(curs, usernm, psswrd):
                     confirmPass = True
                 else:
+                    maxAttempts = maxAttempts - 1
                     print("password does not match, try again")
+                if maxAttempts == 0:
+                    print("Ran out of attempts")
+                    break
             return usernm
+
         elif cmdlnInput == '2':
             alreadyExisting = True
             passConfirmation = False
             usernm = ""
             psswrd = ""
+            maxAttempts = 3
             while alreadyExisting:
                 usernm = input("Username: ")
                 if PostgresFunctions.alreadyExistingUser(curs, usernm) == False:
                     alreadyExisting = False
                 else:
+                    maxAttempts = maxAttempts - 1
                     print("Username taken, please choose a different one")
+                if maxAttempts == 0:
+                    print("Ran out of attempts")
+                    break
 
+            maxAttempts = 3
             while passConfirmation != True:
                 psswrd = input("Password: ")
                 psswrdconf = input("Confirm Password: ")
                 if psswrd == psswrdconf:
                     passConfirmation = True
                 else:
+                    maxAttempts = maxAttempts - 1
                     print("Passwords do not match, try again")
+                if maxAttempts == 0:
+                    print("Ran out of attempts")
+                    break
 
             firstnm = input("First Name: ")
             lastnm = input("Last Name: ")
             email = input("Email: ")
             PostgresFunctions.createNewUser(curs, usernm, psswrd, firstnm, lastnm, email)
             return usernm
+
         elif cmdlnInput == 'q':
             return None
         else:
@@ -340,6 +363,7 @@ def mainPrompt():
         elif (cmdlnInput == "3"):
             collectionsPrompt()
         elif (cmdlnInput == "q"):
+            print("Signing Out")
             break
         else:
             print("Invalid Input")
