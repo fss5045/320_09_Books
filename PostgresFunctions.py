@@ -136,10 +136,10 @@ def addBookToCollection(curs, collectionId, book):
     curs.execute(f"INSERT INTO belongsto (collectionid, bookid) values (\'{collectionId}\', \'{book}\')")
     return
 
-def readBooks(curs, currentUsername, bookId, pagesRead):
-    curs.execute("SELECT NOW()")
-    current_time = curs.fetchOne()
-    curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{current_time}\', \'{pagesRead}\')")
+def readBooks(curs, currentUsername, bookTitle, pagesRead):
+    today = date.today()
+    bookId = getBookID(curs, bookTitle)
+    curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{today}\', \'{pagesRead}\')")
 
 def rateBook(curs, username, bookId, rating):
     curs.execute(f"INSERT INTO rates (username, bookid, rating) values (\'{username}\', \'{bookId}\', \'{rating}\')")
