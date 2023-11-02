@@ -227,12 +227,12 @@ def userSearchPrompt():
         else:
             print("Invalid Input")
 
-def readBookPrompt(bookId):
+def readBookPrompt(bookTitle):
     global currentUsername
-    if bookId != None:
-        bookId = input("Give bookID to read: ")
+    if bookTitle == None:
+        bookTitle = input("Which book do you want to read: ")
     pages = input("How many pages did you read: ")
-    PostgresFunctions.readBooks(curs, currentUsername, bookId, pages)
+    PostgresFunctions.readBooks(curs, currentUsername, bookTitle, pages)
     return
 
 def selectedCollectionPrompt(collectionId):
@@ -243,11 +243,13 @@ def selectedCollectionPrompt(collectionId):
         print("Read selected book from collection: 2")
         print("Read random book from collection: 3")
         print("Rename Collection: 4")
+        print("Back to collections: q")
         cmdlnInput = input(":")
         if cmdlnInput == "1":
             rateBookPrompt()
         elif cmdlnInput == "2":
-            readBookPrompt(None)
+            bookTitle = input ("Which book do you want to read: ")
+            readBookPrompt(bookTitle)
         elif cmdlnInput == "3":
             #select random book from collection
             #readBookPrompt(randBookId)
