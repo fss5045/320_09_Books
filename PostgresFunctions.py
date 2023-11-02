@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 def showBook(curs):
     curs.execute("SELECT * FROM book")
     return curs.fetchall()
@@ -137,7 +137,7 @@ def addBookToCollection(curs, collectionId, book):
     return
 
 def readBooks(curs, currentUsername, bookTitle, pagesRead):
-    today = date.today()
+    now = datetime.now()
     bookId = getBookID(curs, bookTitle)
     curs.execute(f"SELECT username, bookid FROM reads WHERE username = \'{currentUsername}\' AND bookid = \'{bookId}\' ")
     list_of_reads = curs.fetchall()
@@ -145,7 +145,7 @@ def readBooks(curs, currentUsername, bookTitle, pagesRead):
         if rates[1] == bookId and rates[0] == currentUsername:
            curs.execute(f"UPDATE reads SET pages = \'{pagesRead}\'  WHERE username = \'{currentUsername}\' AND bookid = \'{bookId}\'")
            return
-    curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{today}\', \'{pagesRead}\')")
+    curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{now}\', \'{pagesRead}\')")
     return 
 
 def rateBook(curs, username, bookName, rating):
