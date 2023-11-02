@@ -32,14 +32,14 @@ def unfollowUser(curs, username1, username2):
     return
 
 def alreadyExistingUser(curs, username):
-    print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')"))
+    #print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')"))
     curs.execute(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')")
     if curs.fetchone() == None:
         return False
     return True
 
 def userMatchPassword(curs, username, password):
-    print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')"))
+    #print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')"))
     curs.execute(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')", (username,password))
     if curs.fetchone() == None:
         return False
@@ -70,6 +70,10 @@ def getNextId(curs, table):
 
 def showCollections(curs, username):
     curs.execute(f"SELECT * FROM collection WHERE username = \'{username}\'")
+    return curs.fetchall()
+
+def showSelectedCollection(curs, username, collectionId):
+    curs.execute(f"SELECT * FROM book LEFT JOIN belongsto ON book.bookid = belongsto.bookid WHERE belongsto.collectionid = {collectionId}")
     return curs.fetchall()
 
 def modifyCollectionName(curs, collectionId, newName):
