@@ -139,11 +139,16 @@ def addBookToCollection(curs, collectionId, book):
 def readBooks(curs, currentUsername, bookTitle, pagesRead):
     today = date.today()
     bookId = getBookID(curs, bookTitle)
+    curs.execute(f"SELECT username, bookid FROM reads WHERE username = \'{currentUsername}\' AND bookid = \'{bookId}\' ")
+    list_of_reads = curs.fetchall()
+    for rates in list_of_reads:
+        if rates[1] == bookId and rates[0] == currentUsername:
+           curs.execute(f"UPDATE reads SET pages = \'{pagesRead}\'  WHERE username = \'{currentUsername}\' AND bookid = \'{bookId}\'")
+           return
     curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{today}\', \'{pagesRead}\')")
 
 def rateBook(curs, username, bookName, rating):
     bookId = getBookID(curs, bookName)
-
     curs.execute(f"SELECT username, bookid FROM rates WHERE username = \'{username}\' AND bookid = \'{bookId}\' ")
     list_of_rates = curs.fetchall()
     for rates in list_of_rates:
