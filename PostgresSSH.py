@@ -255,8 +255,11 @@ def readBookPrompt(bookTitle):
     global currentUsername
     if bookTitle == None:
         bookTitle = input("Which book do you want to read: ")
-    pages = input("How many pages did you read: ")
-    PostgresFunctions.readBooks(curs, currentUsername, bookTitle, pages)
+    startPage = input("Start page: ")
+    endPage = input("End page: ")
+    pages = int(endPage) - int(startPage)
+    print(pages)
+    PostgresFunctions.readBooks(curs, currentUsername, bookTitle, str(pages))
     return
 
 def selectedCollectionPrompt(collectionId):
