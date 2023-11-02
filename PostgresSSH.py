@@ -65,13 +65,24 @@ def loginPrompt():
 
 def addBookToCollectionPrompt():
     global currentUsername
-    bookId = input("Give Books ID")
+    book = input("Give Books Title: ")
+    bookId = PostgresFunctions.getBookID(curs, book)
+    if bookId == None:
+        print("Book does not exist, try again")
+        return
     #check for valid bookID if invalid go back to filter
     #SQL Query to show users Collections
+    for collection in PostgresFunctions.showCollections(curs, currentUsername):
+        print(collection)
     print("Select a collection to add to")
-    collectionId = input("Give Collection ID")
+    collectionTitle = input("Give Collection Title: ")
+    collectionId = PostgresFunctions.getCollectionId(curs, collectionTitle, currentUsername)
+    if collectionId == None:
+        print("Collection does not exist")
+        return
     #check for valid collectionID if invalid go back to filter
     #SQL Query to add the book to given collection
+    PostgresFunctions.addBookToCollection(curs, collectionId, bookId)
 
 def printSearchQuery(searchQuery): 
     for key in searchQuery.keys():
@@ -231,6 +242,7 @@ def selectedCollectionPrompt(collectionId):
         print("Rate book from collection: 1")
         print("Read selected book from collection: 2")
         print("Read random book from collection: 3")
+        print("Rename Collection: 4")
         cmdlnInput = input(":")
         if cmdlnInput == "1":
             rateBookPrompt()
@@ -240,6 +252,13 @@ def selectedCollectionPrompt(collectionId):
             #select random book from collection
             #readBookPrompt(randBookId)
             pass
+        elif cmdlnInput == "4":
+            newColName = input("New name for selected collection: ")
+            collectionExists = PostgresFunctions.getCollectionId(curs, newColName, currentUsername)
+            if collectionExists == None:
+                PostgresFunctions.modifyCollectionName(curs, collectionId, newColName)
+            else:
+                print("Collection already exists")
         elif cmdlnInput == "q":
             break
         else:
@@ -255,10 +274,15 @@ def collectionsPrompt():
         print("Back to main: q")
         cmdlnInput = input(":")
         if cmdlnInput == "1":
-            print(PostgresFunctions.showCollections(curs, currentUsername))
+            for collection in PostgresFunctions.showCollections(curs, currentUsername):
+                print(collection)
 
         elif cmdlnInput == "2":
             newCollectionName = input("Name your collection: ")
+            collectionExists = PostgresFunctions.getCollectionId(curs, newCollectionName, currentUsername)
+            if collectionExists != None:
+                print("Collection Name already taken")
+                continue
             bookIds = []
             print("Give books to add to your new collection, enter q to finish")
             while (True):

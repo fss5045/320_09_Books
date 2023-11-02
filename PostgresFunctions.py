@@ -72,10 +72,8 @@ def showCollections(curs, username):
     curs.execute(f"SELECT * FROM collection WHERE username = \'{username}\'")
     return curs.fetchall()
 
-def modifyCollectionName(curs, collectionId, newName, currentUsername):
-    curs.execute(f"SELECT username FROM collection WHERE collectionId = \'{collectionId}\'")
-    if curs.fetchone() == currentUsername:
-        curs.execute(f"UPDATE collection SET username = \'{newName}\' WHERE collectionId = \'{collectionId}\'")
+def modifyCollectionName(curs, collectionId, newName):
+    curs.execute(f"UPDATE collection SET name = \'{newName}\' WHERE collectionId = \'{collectionId}\'")
     return
 
 def deleteCollection(curs, collectionId):
@@ -131,7 +129,7 @@ def sortBooks(curs, query, sorter, ascending):
     return curs.fetchall()
 
 def addBookToCollection(curs, collectionId, book):
-    curs.execute(f"INSERT INTO belongsto (collectionid, book) values (\'{collectionId}\', \'{book}\')")
+    curs.execute(f"INSERT INTO belongsto (collectionid, bookid) values (\'{collectionId}\', \'{book}\')")
     return
 
 def readBooks(curs, currentUsername, bookId, pagesRead):
