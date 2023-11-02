@@ -146,6 +146,7 @@ def readBooks(curs, currentUsername, bookTitle, pagesRead):
            curs.execute(f"UPDATE reads SET pages = \'{pagesRead}\'  WHERE username = \'{currentUsername}\' AND bookid = \'{bookId}\'")
            return
     curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{today}\', \'{pagesRead}\')")
+    return 
 
 def rateBook(curs, username, bookName, rating):
     bookId = getBookID(curs, bookName)
