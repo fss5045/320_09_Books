@@ -32,14 +32,14 @@ def unfollowUser(curs, username1, username2):
     return
 
 def alreadyExistingUser(curs, username):
-    print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')"))
+    #print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')"))
     curs.execute(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\')")
     if curs.fetchone() == None:
         return False
     return True
 
 def userMatchPassword(curs, username, password):
-    print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')"))
+    #print(curs.mogrify(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')"))
     curs.execute(f"SELECT * FROM users WHERE EXISTS (SELECT 1 FROM users WHERE users.username = \'{username}\' AND users.password = \'{password}\')", (username,password))
     if curs.fetchone() == None:
         return False
@@ -69,7 +69,11 @@ def getNextId(curs, table):
     return result[0] + 1
 
 def showCollections(curs, username):
-    curs.execute(f"SELECT * FROM collection WHERE username = \'{username}\'")
+    curs.execute(f"SELECT name FROM collection WHERE username = \'{username}\'")
+    return curs.fetchall()
+
+def showSelectedCollection(curs, username, collectionId):
+    curs.execute(f"SELECT * FROM book LEFT JOIN belongsto ON book.bookid = belongsto.bookid WHERE belongsto.collectionid = {collectionId}")
     return curs.fetchall()
 
 def modifyCollectionName(curs, collectionId, newName):
@@ -132,10 +136,10 @@ def addBookToCollection(curs, collectionId, book):
     curs.execute(f"INSERT INTO belongsto (collectionid, bookid) values (\'{collectionId}\', \'{book}\')")
     return
 
-def readBooks(curs, currentUsername, bookId, pagesRead):
-    curs.execute("SELECT NOW()")
-    current_time = curs.fetchOne()
-    curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{current_time}\', \'{pagesRead}\')")
+def readBooks(curs, currentUsername, bookTitle, pagesRead):
+    today = date.today()
+    bookId = getBookID(curs, bookTitle)
+    curs.execute(f"INSERT INTO reads (username , bookid, readdatetime, pages) values (\'{currentUsername}\', \'{bookId}\', \'{today}\', \'{pagesRead}\')")
 
 def rateBook(curs, username, bookName, rating):
     bookId = getBookID(curs, bookName)

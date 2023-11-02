@@ -1,6 +1,7 @@
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 from dotenv import dotenv_values
+from random import randrange
 import PostgresFunctions
 
 config = dotenv_values("LoginCredentials.env")
@@ -20,44 +21,67 @@ def loginPrompt():
             confirmPass = False
             usernm = ""
             psswrd = ""
+            maxAttempts = 3
             while alreadyExisting != True:
                 usernm = input("Username: ")
                 if PostgresFunctions.alreadyExistingUser(curs, usernm):
                     alreadyExisting = True
                 else:
+                    maxAttempts = maxAttempts - 1
                     print("This username does not exist, please try again or make a new account")
+                if maxAttempts == 0:
+                    print("Ran out of attempts")
+                    break
+
+            maxAttempts = 3
             while confirmPass != True:
                 psswrd = input("Password: ")
                 if PostgresFunctions.userMatchPassword(curs, usernm, psswrd):
                     confirmPass = True
                 else:
+                    maxAttempts = maxAttempts - 1
                     print("password does not match, try again")
+                if maxAttempts == 0:
+                    print("Ran out of attempts")
+                    break
             return usernm
+
         elif cmdlnInput == '2':
             alreadyExisting = True
             passConfirmation = False
             usernm = ""
             psswrd = ""
+            maxAttempts = 3
             while alreadyExisting:
                 usernm = input("Username: ")
                 if PostgresFunctions.alreadyExistingUser(curs, usernm) == False:
                     alreadyExisting = False
                 else:
+                    maxAttempts = maxAttempts - 1
                     print("Username taken, please choose a different one")
+                if maxAttempts == 0:
+                    print("Ran out of attempts")
+                    break
 
+            maxAttempts = 3
             while passConfirmation != True:
                 psswrd = input("Password: ")
                 psswrdconf = input("Confirm Password: ")
                 if psswrd == psswrdconf:
                     passConfirmation = True
                 else:
+                    maxAttempts = maxAttempts - 1
                     print("Passwords do not match, try again")
+                if maxAttempts == 0:
+                    print("Ran out of attempts")
+                    break
 
             firstnm = input("First Name: ")
             lastnm = input("Last Name: ")
             email = input("Email: ")
             PostgresFunctions.createNewUser(curs, usernm, psswrd, firstnm, lastnm, email)
             return usernm
+
         elif cmdlnInput == 'q':
             return None
         else:
@@ -227,31 +251,36 @@ def userSearchPrompt():
         else:
             print("Invalid Input")
 
-def readBookPrompt(bookId):
+def readBookPrompt(bookTitle):
     global currentUsername
-    if bookId != None:
-        bookId = input("Give bookID to read: ")
-    pages = input("How many pages did you read: ")
-    PostgresFunctions.readBooks(curs, currentUsername, bookId, pages)
+    if bookTitle == None:
+        bookTitle = input("Which book do you want to read: ")
+    startPage = input("Start page: ")
+    endPage = input("End page: ")
+    pages = int(endPage) - int(startPage)
+    print(pages)
+    PostgresFunctions.readBooks(curs, currentUsername, bookTitle, str(pages))
     return
 
 def selectedCollectionPrompt(collectionId):
     global currentUsername
-    #Show the selected collection
+    booksInCollection = PostgresFunctions.showSelectedCollection(curs, username, collectionId)
+    for book in booksInCollection:
+        print(book)
     while (True):
         print("Rate book from collection: 1")
         print("Read selected book from collection: 2")
         print("Read random book from collection: 3")
         print("Rename Collection: 4")
+        print("Back to collections: q")
         cmdlnInput = input(":")
         if cmdlnInput == "1":
             rateBookPrompt()
         elif cmdlnInput == "2":
-            readBookPrompt(None)
+            bookTitle = input ("Which book do you want to read: ")
+            readBookPrompt(bookTitle)
         elif cmdlnInput == "3":
-            #select random book from collection
-            #readBookPrompt(randBookId)
-            pass
+            readBookPrompt(booksInCollection[randrange(len(booksInCollection))][1])
         elif cmdlnInput == "4":
             newColName = input("New name for selected collection: ")
             collectionExists = PostgresFunctions.getCollectionId(curs, newColName, currentUsername)
@@ -275,7 +304,7 @@ def collectionsPrompt():
         cmdlnInput = input(":")
         if cmdlnInput == "1":
             for collection in PostgresFunctions.showCollections(curs, currentUsername):
-                print(collection)
+                print(collection[0])
 
         elif cmdlnInput == "2":
             newCollectionName = input("Name your collection: ")
@@ -339,6 +368,7 @@ def mainPrompt():
         elif (cmdlnInput == "3"):
             collectionsPrompt()
         elif (cmdlnInput == "q"):
+            print("Signing Out")
             break
         else:
             print("Invalid Input")
