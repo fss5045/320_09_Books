@@ -72,6 +72,10 @@ def showCollections(curs, username):
     curs.execute(f"SELECT * FROM collection WHERE username = \'{username}\'")
     return curs.fetchall()
 
+def showSelectedCollection(curs, username, collectionId):
+    curs.execute(f"SELECT * FROM book LEFT JOIN belongsto ON book.bookid = belongsto.bookid WHERE belongsto.collectionid = {collectionId}")
+    return curs.fetchall()
+
 def modifyCollectionName(curs, collectionId, newName):
     curs.execute(f"UPDATE collection SET name = \'{newName}\' WHERE collectionId = \'{collectionId}\'")
     return

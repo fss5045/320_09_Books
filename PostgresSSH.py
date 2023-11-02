@@ -1,6 +1,7 @@
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
 from dotenv import dotenv_values
+from random import randrange
 import PostgresFunctions
 
 config = dotenv_values("LoginCredentials.env")
@@ -229,7 +230,7 @@ def userSearchPrompt():
 
 def readBookPrompt(bookId):
     global currentUsername
-    if bookId != None:
+    if bookId == None:
         bookId = input("Give bookID to read: ")
     pages = input("How many pages did you read: ")
     PostgresFunctions.readBooks(curs, currentUsername, bookId, pages)
@@ -237,7 +238,9 @@ def readBookPrompt(bookId):
 
 def selectedCollectionPrompt(collectionId):
     global currentUsername
-    #Show the selected collection
+    booksInCollection = PostgresFunctions.showSelectedCollection(curs, username, collectionId)
+    for book in booksInCollection:
+        print(book)
     while (True):
         print("Rate book from collection: 1")
         print("Read selected book from collection: 2")
@@ -249,9 +252,7 @@ def selectedCollectionPrompt(collectionId):
         elif cmdlnInput == "2":
             readBookPrompt(None)
         elif cmdlnInput == "3":
-            #select random book from collection
-            #readBookPrompt(randBookId)
-            pass
+            readBookPrompt(booksInCollection[randrange(len(booksInCollection))][1])
         elif cmdlnInput == "4":
             newColName = input("New name for selected collection: ")
             collectionExists = PostgresFunctions.getCollectionId(curs, newColName, currentUsername)
