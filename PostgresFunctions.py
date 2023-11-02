@@ -69,7 +69,7 @@ def getNextId(curs, table):
     return result[0] + 1
 
 def showCollections(curs, username):
-    curs.execute(f"SELECT * FROM collection WHERE username = \'{username}\'")
+    curs.execute(f"SELECT name FROM collection WHERE username = \'{username}\'")
     return curs.fetchall()
 
 def showSelectedCollection(curs, username, collectionId):

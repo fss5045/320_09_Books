@@ -299,7 +299,7 @@ def collectionsPrompt():
         cmdlnInput = input(":")
         if cmdlnInput == "1":
             for collection in PostgresFunctions.showCollections(curs, currentUsername):
-                print(collection)
+                print(collection[0])
 
         elif cmdlnInput == "2":
             newCollectionName = input("Name your collection: ")
