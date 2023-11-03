@@ -209,7 +209,7 @@ def followUserPrompt():
     otherUsername = input("Give username: ")
     if PostgresFunctions.alreadyExistingUser(curs, otherUsername):
         # Maybe check if they already follow each other
-        PostgresFunctions.followUser(curs, otherUsername, currentUsername)
+        PostgresFunctions.followUser(curs,currentUsername,otherUsername)
     else:
         print("The user you want to follow does not exist")
 
@@ -219,7 +219,7 @@ def unfollowUserPrompt():
     otherUsername = input("Give username: ")
     if PostgresFunctions.alreadyExistingUser(curs, otherUsername):
         # Maybe check if they already follow each other
-        PostgresFunctions.unfollowUser(curs, otherUsername, currentUsername)
+        PostgresFunctions.unfollowUser(curs, currentUsername, otherUsername)
     else:
         print("The user you want to unfollow does not exist")
 
