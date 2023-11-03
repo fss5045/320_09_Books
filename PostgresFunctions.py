@@ -4,10 +4,14 @@ def showBook(curs):
     return curs.fetchall()
 
 def createNewUser(curs, username, password, firstname, lastname, email):
-    today = date.today()
+    now = datetime.now()
     #print(curs.mogrify("INSERT INTO users VALUES (%s, %s, %s, %s, %s, %s, %s)", (username, firstname, lastname, email, today, today, password)))
-    curs.execute(f"INSERT INTO users VALUES (\'{username}\', \'{firstname}\', \'{lastname}\', \'{email}\', \'{today}\', \'{today}\', \'{password}\')", (username, firstname, lastname, email, today, today, password))
+    curs.execute(f"INSERT INTO users VALUES (\'{username}\', \'{firstname}\', \'{lastname}\', \'{email}\', \'{now}\', \'{now}\', \'{password}\')", (username, firstname, lastname, email, now, now, password))
     return
+
+def updateUserAccessDate(curs, username):
+    now = datetime.now()
+    curs.execute(f"UPDATE users SET lastaccessdate = \'{now}\' WHERE username = \'{username}\'")
 
 def deleteUser(curs, username):
     #print(curs.mogrify("DELETE FROM users WHERE username = %s", (username,)))
@@ -69,7 +73,10 @@ def getNextId(curs, table):
     return result[0] + 1
 
 def showCollections(curs, username):
-    curs.execute(f"SELECT name FROM collection WHERE username = \'{username}\'")
+    curs.execute(f"""SELECT C.name,
+                        (SELECT COUNT(*) FROM belongsto BT WHERE BT.collectionid = C.collectionid),
+                        (SELECT SUM(B.length) FROM book B, belongsto BT WHERE BT.collectionid = C.collectionid AND B.bookid = Bt.bookid)
+                    FROM collection C WHERE username =  \'{username}\'""")
     return curs.fetchall()
 
 def showSelectedCollection(curs, username, collectionId):
@@ -132,8 +139,8 @@ def sortBooks(curs, query, sorter, ascending):
         query += " ORDER BY date_trunc('year', " + sorter + ") " + ascending + ", " 
     else:
         query += " ORDER BY " + sorter + " " + ascending + ", "
-    print(curs.mogrify(query + " ORDER BY title ASC, releasedate ASC"))
-    # curs.execute(query + "title ASC, releasedate ASC")
+    # print(curs.mogrify(query + " ORDER BY title ASC, releasedate ASC"))
+    curs.execute(query + "title ASC, releasedate ASC")
     return curs.fetchall()
 
 def addBookToCollection(curs, collectionId, book):
@@ -164,5 +171,5 @@ def rateBook(curs, username, bookName, rating):
     return
 
 def deleteBookFromCollection(curs, collectionId, book):
-    curs.execute(f"DELETE FROM belongsto WHERE collectionid  = \'{collectionId}\' AND book= \'{book}\'")
+    curs.execute(f"DELETE FROM belongsto WHERE collectionid  = \'{collectionId}\' AND bookid = \'{book}\'")
     return
