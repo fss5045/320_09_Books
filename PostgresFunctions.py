@@ -110,12 +110,16 @@ def searchBooks(curs, searchDict):
         if not firstWhere:
             where += " WHERE "
             firstWhere = True
+            if key == "releasedate":
+                where += "CAST(" + key + " AS VARCHAR) LIKE '%" + value + "%'"
+            else:
+                where += key + " LIKE '%" + value + "%'"
         else:
             where += " AND "
-        if key == "releasedate":
-            where += "CAST(" + key + " AS VARCHAR) LIKE '%" + value + "%'"
-        else:
-            where += key + " LIKE '%" + value + "%'"
+            if key == "releasedate":
+                where += "CAST(" + key + " AS VARCHAR) LIKE '%" + value + "%'"
+            else:
+                where += key + " LIKE '%" + value + "%'"
         
     query += where
     # query += " ORDER BY title ASC, releasedate ASC"
