@@ -173,3 +173,15 @@ def rateBook(curs, username, bookName, rating):
 def deleteBookFromCollection(curs, collectionId, book):
     curs.execute(f"DELETE FROM belongsto WHERE collectionid  = \'{collectionId}\' AND bookid = \'{book}\'")
     return
+
+def showUserProfile(curs, username):
+    curs.execute(f"""SELECT U.username,
+                    (SELECT COUNT(*) FROM collection C WHERE C.username = U.username) AS "collections",
+                    (SELECT COUNT(*) FROM userfollow UF WHERE UF.usernamefollowed = U.username) AS "followers",
+                    (SELECT COUNT(*) FROM userfollow UF WHERE UF.usernamefollower = U.username) AS "following"
+                  FROM users U WHERE U.username = \'{username}\'""")
+    basicResults = curs.fetchall()
+    curs.execute("""SELECT(SELECT B.title FROM book B WHERE B.bookid = R.bookid), R.rating
+                    FROM rates R WHERE R.username = 'test' ORDER BY rating DESC fetch first 10 rows only""")
+    top10books = curs.fetchall()
+    return basicResults, top10books
