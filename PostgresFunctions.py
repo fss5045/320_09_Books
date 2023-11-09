@@ -20,9 +20,9 @@ def deleteUser(curs, username):
 
 def searchUsers(curs, username, email):
     if username == None:
-        curs.execute(f"SELECT * FROM users WHERE email = \'{email}\'")
+        curs.execute(f"SELECT username, firstname, lastname, email, accountcreatedate FROM users WHERE email = \'{email}\'")
     if email == None:
-        curs.execute(f"SELECT * FROM users WHERE username = \'{username}\'")
+        curs.execute(f"SELECT username, firstname, lastname, email, accountcreatedate FROM users WHERE username LIKE \'%{username}%\'")
     return curs.fetchall()
 
 def followUser(curs, username1, username2):
@@ -75,8 +75,8 @@ def getNextId(curs, table):
 def showCollections(curs, username):
     curs.execute(f"""SELECT C.name,
                         (SELECT COUNT(*) FROM belongsto BT WHERE BT.collectionid = C.collectionid),
-                        (SELECT SUM(B.length) FROM book B, belongsto BT WHERE BT.collectionid = C.collectionid AND B.bookid = Bt.bookid)
-                    FROM collection C WHERE username =  \'{username}\'""")
+                        (SELECT SUM(B.length) FROM book B, belongsto BT WHERE BT.collectionid = C.collectionid AND B.bookid = BT.bookid)
+                    FROM collection C WHERE username = \'{username}\'""")
     return curs.fetchall()
 
 def showSelectedCollection(curs, username, collectionId):
@@ -180,8 +180,8 @@ def showUserProfile(curs, username):
                     (SELECT COUNT(*) FROM userfollow UF WHERE UF.usernamefollowed = U.username) AS "followers",
                     (SELECT COUNT(*) FROM userfollow UF WHERE UF.usernamefollower = U.username) AS "following"
                   FROM users U WHERE U.username = \'{username}\'""")
-    basicResults = curs.fetchall()
-    curs.execute("""SELECT(SELECT B.title FROM book B WHERE B.bookid = R.bookid), R.rating
-                    FROM rates R WHERE R.username = 'test' ORDER BY rating DESC fetch first 10 rows only""")
+    basicResults = curs.fetchone()
+    curs.execute(f"""SELECT(SELECT B.title FROM book B WHERE B.bookid = R.bookid), R.rating
+                    FROM rates R WHERE R.username = \'{username}\' ORDER BY rating DESC fetch first 10 rows only""")
     top10books = curs.fetchall()
     return basicResults, top10books

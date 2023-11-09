@@ -229,6 +229,7 @@ def userSearchPrompt():
         print("Search for user: 1")
         print("Follow User: 2")
         print("Unfollow User: 3")
+        print("View user profile: 4")
         print("Back to main: q")
         cmdlnInput = input(":")
         if cmdlnInput == "1":
@@ -247,6 +248,9 @@ def userSearchPrompt():
             followUserPrompt()
         elif cmdlnInput == "3":
             unfollowUserPrompt()
+        elif cmdlnInput == "4":
+            username = input("Give a username: ")
+            profilePrompt(username)
         elif cmdlnInput == "q":
             break
         else:
@@ -372,11 +376,21 @@ def rateBookPrompt():
     rating = input("Your rating: ")
     PostgresFunctions.rateBook(curs, currentUsername, bookId, rating)
 
+def profilePrompt(username):
+    basic, books = PostgresFunctions.showUserProfile(curs, username)
+    print(f"{basic[0]}'s profile:")
+    print(f"{basic[1]} collections, {basic[2]} followers, {basic[3]} following")
+    print(f"{username}'s top 10 books:")
+    for book in books:
+        print(book)
+    print()
+
 def mainPrompt():
     while (True):
         print("Search Books: 1")
         print("Search Users: 2")
         print("Go To Collections: 3")
+        print("View your profile: 4")
         print("Exit and log out: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
@@ -385,6 +399,8 @@ def mainPrompt():
             userSearchPrompt()
         elif (cmdlnInput == "3"):
             collectionsPrompt()
+        elif(cmdlnInput == "4"):
+            profilePrompt(currentUsername)
         elif (cmdlnInput == "q"):
             print("Signing Out")
             break
