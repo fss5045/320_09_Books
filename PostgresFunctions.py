@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 def showBook(curs):
     curs.execute("SELECT * FROM book")
     return curs.fetchall()
@@ -185,3 +185,33 @@ def showUserProfile(curs, username):
                     FROM rates R WHERE R.username = \'{username}\' ORDER BY rating DESC fetch first 10 rows only""")
     top10books = curs.fetchall()
     return basicResults, top10books
+
+def getTopBooks(curs):
+    curs.execute(f"""SELECT B.title
+                FROM book B, rates R
+                WHERE B.bookid = R.bookid AND B.releasedate >= (current_date - 90)
+                GROUP BY B.bookid, B.title
+                ORDER BY avg(R.rating) DESC
+                fetch first 20 rows only""")
+    top20books = curs.fetchall()
+    return top20books
+
+def getFollowersTopBooks(curs, username):
+    curs.execute(f"""SELECT B.title
+                FROM book B, rates R
+                WHERE B.bookid = R.bookid AND R.username in (SELECT usernamefollower FROM userfollow WHERE usernamefollowed = \'{username}\')
+                GROUP BY B.bookid
+                ORDER BY avg(R.rating) DESC
+                fetch first 20 rows only """)
+    top20books = curs.fetchall()
+    return top20books
+
+def getTop5OfMonth(curs):
+    curs.execute(f"""SELECT B.title
+                FROM book B, rates R
+                WHERE B.bookid = R.bookid AND B.releasedate >= (current_date - int2(extract(day from current_date)))
+                GROUP BY B.bookid, B.title, B.releasedate
+                ORDER BY B.releasedate DESC
+                fetch first 5 rows only""")
+    booksOfMonth = curs.fetchall()
+    return booksOfMonth

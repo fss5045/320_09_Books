@@ -384,22 +384,55 @@ def profilePrompt(username):
     for book in books:
         print(book)
     print()
+def recommendBookPrompt(username):
+    while (True):
+        print("Top 20 Most Popular Books in last 90 days: 1")
+        print("Top 20 Most Popular Books Among Followers: 2")
+        print("Top 5 new Releases This Month: 3")
+        print("Recommended books for you (Top 10): 4")
+        print("Back to main: q")
+        cmdlnInput = input(":")
+        if cmdlnInput == "1":
+            print("Top 20 Most Popular Books in last 90 days:")
+            top20Books = PostgresFunctions.getTopBooks(curs)
+            for book in top20Books:
+                print(book)
+        elif cmdlnInput == "2":
+            print("Top 20 Most Popular Books Among Followers:")
+            topFollowerBooks = PostgresFunctions.getFollowersTopBooks(curs, username)
+            for book in topFollowerBooks:
+                print(book)
+        elif cmdlnInput == "3":
+            print("Top 5 new Releases this month: ")
+            top5NewBooks = PostgresFunctions.getTop5OfMonth(curs)
+            for book in top5NewBooks:
+                print(book)
+        elif cmdlnInput == "4":
+            print("Recommended books for you (Top 10): ")
+            # Add function here
+        elif (cmdlnInput == "q"):
+            break
+        else:
+            print("Invalid Input")
 
 def mainPrompt():
     while (True):
         print("Search Books: 1")
-        print("Search Users: 2")
-        print("Go To Collections: 3")
-        print("View your profile: 4")
+        print("Recommend Book: 2")
+        print("Search Users: 3")
+        print("Go To Collections: 4")
+        print("View your profile: 5")
         print("Exit and log out: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
             bookSearchPrompt()
         elif (cmdlnInput == "2"):
-            userSearchPrompt()
+            recommendBookPrompt(currentUsername)
         elif (cmdlnInput == "3"):
+            userSearchPrompt()
+        elif (cmdlnInput == "4"):
             collectionsPrompt()
-        elif(cmdlnInput == "4"):
+        elif(cmdlnInput == "5"):
             profilePrompt(currentUsername)
         elif (cmdlnInput == "q"):
             print("Signing Out")
