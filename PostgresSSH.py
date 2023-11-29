@@ -125,6 +125,7 @@ def bookSortPrompt(originalQuery):
         print("Sort by Genre: 5")
         print("Add book to your collection: 6")
         print("Rate a book: 7")
+        print("Read a book: 8")
         print("Back to search: q")
         cmdlnInput = input(":")
         if cmdlnInput == '1':
@@ -155,6 +156,8 @@ def bookSortPrompt(originalQuery):
             addBookToCollectionPrompt()
         elif cmdlnInput == '7':
             rateBookPrompt()
+        elif cmdlnInput == '8':
+            readBookPrompt()
         elif cmdlnInput == 'q':
             break
         else:
@@ -256,7 +259,7 @@ def userSearchPrompt():
         else:
             print("Invalid Input")
 
-def readBookPrompt(bookTitle):
+def readBookPrompt(bookTitle = None):
     global currentUsername
     if bookTitle == None:
         bookTitle = input("Which book do you want to read: ")
@@ -384,6 +387,7 @@ def profilePrompt(username):
     for book in books:
         print(book)
     print()
+
 def recommendBookPrompt(username):
     while (True):
         print("Top 20 Most Popular Books in last 90 days: 1")
