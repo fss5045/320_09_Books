@@ -215,3 +215,14 @@ def getTop5OfMonth(curs):
                 fetch first 5 rows only""")
     booksOfMonth = curs.fetchall()
     return booksOfMonth
+
+def getUserRecommendedBooks(curs, username):
+    '''curs.execute(f"""SELECT B.title
+                    FROM book B, rates R
+                    WHERE B.bookid = R.bookid AND R.username in (SELECT usernamefollower FROM userfollow WHERE usernamefollowed = \'{username}\')
+                    GROUP BY B.bookid
+                    ORDER BY avg(R.rating) DESC
+                    fetch first 20 rows only """)
+    '''
+    recommendedBooks = curs.fetchall()
+    return recommendedBooks
