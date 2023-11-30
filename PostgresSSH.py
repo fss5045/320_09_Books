@@ -413,6 +413,7 @@ def recommendBookPrompt(username):
                 print(book)
         elif cmdlnInput == "4":
             print("Recommended books for you (Top 10): ")
+            PostgresFunctions.getRecommendedBooks(curs, username)
             # Add function here
         elif (cmdlnInput == "q"):
             break

@@ -223,8 +223,12 @@ def getRecommendedBooks(curs, username):
                     FROM reads R, bookgenre BG WHERE R.bookid = BG.bookid AND R.username = '{username}'
                     GROUP BY BG.genreid fetch first 3 rows only""")
     topGenres = curs.fetchall()
+
+
     curs.execute(f"""SELECT W.contributorid,
                         (SELECT string_agg(CONCAT(firstname, ' ', lastname), ', ') AS author FROM contributor C WHERE C.contributorid = W.contributorid GROUP BY C.contributorid)
                     FROM reads R, writes W WHERE R.bookid = W.bookid AND R.username = '{username}'
                     GROUP BY W.contributorid fetch first 3 rows only""")
+
+
     topAuthors = curs.fetchall()
