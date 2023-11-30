@@ -187,9 +187,9 @@ def showUserProfile(curs, username):
     return basicResults, top10books
 
 def getTopBooks(curs):
-    curs.execute(f"""SELECT B.title
-                FROM book B, rates R
-                WHERE B.bookid = R.bookid AND B.releasedate >= (current_date - 90)
+    curs.execute(f"""SELECT B.title, avg(R.rating)
+                FROM book B, rates R, reads RR
+                WHERE B.bookid = R.bookid AND RR.readdatetime >= (current_date - 90)
                 GROUP BY B.bookid, B.title
                 ORDER BY avg(R.rating) DESC
                 fetch first 20 rows only""")
@@ -197,7 +197,7 @@ def getTopBooks(curs):
     return top20books
 
 def getFollowersTopBooks(curs, username):
-    curs.execute(f"""SELECT B.title
+    curs.execute(f"""SELECT B.title, avg(R.rating)
                 FROM book B, rates R
                 WHERE B.bookid = R.bookid AND R.username in (SELECT usernamefollower FROM userfollow WHERE usernamefollowed = \'{username}\')
                 GROUP BY B.bookid
@@ -207,9 +207,10 @@ def getFollowersTopBooks(curs, username):
     return top20books
 
 def getTop5OfMonth(curs):
-    curs.execute(f"""SELECT B.title
+    curs.execute(f"""SELECT B.title, avg(R.rating)
                 FROM book B, rates R
-                WHERE B.bookid = R.bookid AND B.releasedate >= (current_date - int2(extract(day from current_date)))
+                WHERE B.bookid = R.bookid AND AND extract(Year FROM B.releasedate) = extract(Year FROM current_date)
+                    AND extract(Month FROM B.releasedate) = extract(Month FROM current_date)
                 GROUP BY B.bookid, B.title, B.releasedate
                 ORDER BY B.releasedate DESC
                 fetch first 5 rows only""")
