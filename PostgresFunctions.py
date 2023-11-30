@@ -209,7 +209,7 @@ def getFollowersTopBooks(curs, username):
 def getTop5OfMonth(curs):
     curs.execute(f"""SELECT B.title, avg(R.rating)
                 FROM book B, rates R
-                WHERE B.bookid = R.bookid AND AND extract(Year FROM B.releasedate) = extract(Year FROM current_date)
+                WHERE B.bookid = R.bookid AND extract(Year FROM B.releasedate) = extract(Year FROM current_date)
                     AND extract(Month FROM B.releasedate) = extract(Month FROM current_date)
                 GROUP BY B.bookid, B.title, B.releasedate
                 ORDER BY B.releasedate DESC
@@ -218,17 +218,22 @@ def getTop5OfMonth(curs):
     return booksOfMonth
 
 def getRecommendedBooks(curs, username):
-    curs.execute(f"""SELECT BG.genreid,
-                        (SELECT G.genrename FROM genre G WHERE G.genreid = BG.genreid GROUP BY G.genrename)
-                    FROM reads R, bookgenre BG WHERE R.bookid = BG.bookid AND R.username = '{username}'
-                    GROUP BY BG.genreid fetch first 3 rows only""")
-    topGenres = curs.fetchall()
-
-
-    curs.execute(f"""SELECT W.contributorid,
-                        (SELECT string_agg(CONCAT(firstname, ' ', lastname), ', ') AS author FROM contributor C WHERE C.contributorid = W.contributorid GROUP BY C.contributorid)
-                    FROM reads R, writes W WHERE R.bookid = W.bookid AND R.username = '{username}'
-                    GROUP BY W.contributorid fetch first 3 rows only""")
-
-
-    topAuthors = curs.fetchall()
+    curs.execute(f"""SELECT B.title ,B.bookid FROM book B WHERE bookid = ANY
+    (SELECT DISTINCT bookid FROM book WHERE bookid in
+        (SELECT bookid FROM reads WHERE username = ANY
+            (SELECT username FROM users WHERE username = ANY
+                (SELECT username FROM reads WHERE bookid = ANY(
+                    (SELECT bookid FROM book WHERE bookid in
+                        (SELECT bookid FROM writes WHERE contributorid  = ANY(SELECT W.contributorid
+                                                                            FROM reads R, writes W WHERE R.bookid = W.bookid AND R.username = '{username}'
+                                                                            GROUP BY W.contributorid fetch first 3 rows only))
+                    OR bookid in
+                        (SELECT bookid FROM bookgenre WHERE genreid = ANY(SELECT BG.genreid
+                                                                            FROM reads R, bookgenre BG WHERE R.bookid = BG.bookid AND R.username = '{username}'
+                                                                            GROUP BY BG.genreid fetch first 3 rows only)))))))
+    GROUP BY bookid)
+    AND
+    bookid in (SELECT bookid FROM reads WHERE username != '{username}')
+    fetch first 10 rows only""")
+    top10RecommendedBooks = curs.fetchall()
+    return top10RecommendedBooks

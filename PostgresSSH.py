@@ -400,21 +400,21 @@ def recommendBookPrompt(username):
             print("Top 20 Most Popular Books in last 90 days:")
             top20Books = PostgresFunctions.getTopBooks(curs)
             for book in top20Books:
-                print(book)
+                print(book[0] + "  Avg rating: " + str(book[1]))
         elif cmdlnInput == "2":
             print("Top 20 Most Popular Books Among Followers:")
             topFollowerBooks = PostgresFunctions.getFollowersTopBooks(curs, username)
             for book in topFollowerBooks:
-                print(book)
+                print(book[0] + "  Avg rating: " + str(book[1]))
         elif cmdlnInput == "3":
             print("Top 5 new Releases this month: ")
             top5NewBooks = PostgresFunctions.getTop5OfMonth(curs)
             for book in top5NewBooks:
-                print(book)
+                print(book[0] + "  Avg rating: " + str(book[1]))
         elif cmdlnInput == "4":
             print("Recommended books for you (Top 10): ")
-            PostgresFunctions.getRecommendedBooks(curs, username)
-            # Add function here
+            for book in PostgresFunctions.getRecommendedBooks(curs, username):
+                print(book[0])
         elif (cmdlnInput == "q"):
             break
         else:
