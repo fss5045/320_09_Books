@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 def showBook(curs):
     curs.execute("SELECT * FROM book")
     return curs.fetchall()
@@ -20,9 +20,9 @@ def deleteUser(curs, username):
 
 def searchUsers(curs, username, email):
     if username == None:
-        curs.execute(f"SELECT * FROM users WHERE email = \'{email}\'")
+        curs.execute(f"SELECT username, firstname, lastname, email, accountcreatedate FROM users WHERE email = \'{email}\'")
     if email == None:
-        curs.execute(f"SELECT * FROM users WHERE username = \'{username}\'")
+        curs.execute(f"SELECT username, firstname, lastname, email, accountcreatedate FROM users WHERE username LIKE \'%{username}%\'")
     return curs.fetchall()
 
 def followUser(curs, username1, username2):
@@ -75,8 +75,8 @@ def getNextId(curs, table):
 def showCollections(curs, username):
     curs.execute(f"""SELECT C.name,
                         (SELECT COUNT(*) FROM belongsto BT WHERE BT.collectionid = C.collectionid),
-                        (SELECT SUM(B.length) FROM book B, belongsto BT WHERE BT.collectionid = C.collectionid AND B.bookid = Bt.bookid)
-                    FROM collection C WHERE username =  \'{username}\'""")
+                        (SELECT SUM(B.length) FROM book B, belongsto BT WHERE BT.collectionid = C.collectionid AND B.bookid = BT.bookid)
+                    FROM collection C WHERE username = \'{username}\'""")
     return curs.fetchall()
 
 def showSelectedCollection(curs, username, collectionId):
@@ -173,3 +173,67 @@ def rateBook(curs, username, bookName, rating):
 def deleteBookFromCollection(curs, collectionId, book):
     curs.execute(f"DELETE FROM belongsto WHERE collectionid  = \'{collectionId}\' AND bookid = \'{book}\'")
     return
+
+def showUserProfile(curs, username):
+    curs.execute(f"""SELECT U.username,
+                    (SELECT COUNT(*) FROM collection C WHERE C.username = U.username) AS "collections",
+                    (SELECT COUNT(*) FROM userfollow UF WHERE UF.usernamefollowed = U.username) AS "followers",
+                    (SELECT COUNT(*) FROM userfollow UF WHERE UF.usernamefollower = U.username) AS "following"
+                  FROM users U WHERE U.username = \'{username}\'""")
+    basicResults = curs.fetchone()
+    curs.execute(f"""SELECT(SELECT B.title FROM book B WHERE B.bookid = R.bookid), R.rating
+                    FROM rates R WHERE R.username = \'{username}\' ORDER BY rating DESC fetch first 10 rows only""")
+    top10books = curs.fetchall()
+    return basicResults, top10books
+
+def getTopBooks(curs):
+    curs.execute(f"""SELECT B.title, avg(R.rating)
+                FROM book B, rates R, reads RR
+                WHERE B.bookid = R.bookid AND RR.readdatetime >= (current_date - 90)
+                GROUP BY B.bookid, B.title
+                ORDER BY avg(R.rating) DESC
+                fetch first 20 rows only""")
+    top20books = curs.fetchall()
+    return top20books
+
+def getFollowersTopBooks(curs, username):
+    curs.execute(f"""SELECT B.title, avg(R.rating)
+                FROM book B, rates R
+                WHERE B.bookid = R.bookid AND R.username in (SELECT usernamefollower FROM userfollow WHERE usernamefollowed = \'{username}\')
+                GROUP BY B.bookid
+                ORDER BY avg(R.rating) DESC
+                fetch first 20 rows only """)
+    top20books = curs.fetchall()
+    return top20books
+
+def getTop5OfMonth(curs):
+    curs.execute(f"""SELECT B.title, avg(R.rating)
+                FROM book B, rates R
+                WHERE B.bookid = R.bookid AND extract(Year FROM B.releasedate) = extract(Year FROM current_date)
+                    AND extract(Month FROM B.releasedate) = extract(Month FROM current_date)
+                GROUP BY B.bookid, B.title, B.releasedate
+                ORDER BY B.releasedate DESC
+                fetch first 5 rows only""")
+    booksOfMonth = curs.fetchall()
+    return booksOfMonth
+
+def getRecommendedBooks(curs, username):
+    curs.execute(f"""SELECT B.title ,B.bookid FROM book B WHERE bookid = ANY
+    (SELECT DISTINCT bookid FROM book WHERE bookid in
+        (SELECT bookid FROM reads WHERE username = ANY
+            (SELECT username FROM users WHERE username = ANY
+                (SELECT username FROM reads WHERE bookid = ANY(
+                    (SELECT bookid FROM book WHERE bookid in
+                        (SELECT bookid FROM writes WHERE contributorid  = ANY(SELECT W.contributorid
+                                                                            FROM reads R, writes W WHERE R.bookid = W.bookid AND R.username = '{username}'
+                                                                            GROUP BY W.contributorid fetch first 3 rows only))
+                    OR bookid in
+                        (SELECT bookid FROM bookgenre WHERE genreid = ANY(SELECT BG.genreid
+                                                                            FROM reads R, bookgenre BG WHERE R.bookid = BG.bookid AND R.username = '{username}'
+                                                                            GROUP BY BG.genreid fetch first 3 rows only)))))))
+    GROUP BY bookid)
+    AND
+    bookid in (SELECT bookid FROM reads WHERE username != '{username}')
+    fetch first 10 rows only""")
+    top10RecommendedBooks = curs.fetchall()
+    return top10RecommendedBooks

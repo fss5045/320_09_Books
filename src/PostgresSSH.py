@@ -125,6 +125,7 @@ def bookSortPrompt(originalQuery):
         print("Sort by Genre: 5")
         print("Add book to your collection: 6")
         print("Rate a book: 7")
+        print("Read a book: 8")
         print("Back to search: q")
         cmdlnInput = input(":")
         if cmdlnInput == '1':
@@ -155,6 +156,8 @@ def bookSortPrompt(originalQuery):
             addBookToCollectionPrompt()
         elif cmdlnInput == '7':
             rateBookPrompt()
+        elif cmdlnInput == '8':
+            readBookPrompt()
         elif cmdlnInput == 'q':
             break
         else:
@@ -209,7 +212,7 @@ def followUserPrompt():
     otherUsername = input("Give username: ")
     if PostgresFunctions.alreadyExistingUser(curs, otherUsername):
         # Maybe check if they already follow each other
-        PostgresFunctions.followUser(curs,currentUsername,otherUsername)
+        PostgresFunctions.followUser(curs, otherUsername, currentUsername)
     else:
         print("The user you want to follow does not exist")
 
@@ -219,7 +222,7 @@ def unfollowUserPrompt():
     otherUsername = input("Give username: ")
     if PostgresFunctions.alreadyExistingUser(curs, otherUsername):
         # Maybe check if they already follow each other
-        PostgresFunctions.unfollowUser(curs, currentUsername, otherUsername)
+        PostgresFunctions.unfollowUser(curs, otherUsername, currentUsername)
     else:
         print("The user you want to unfollow does not exist")
 
@@ -229,6 +232,7 @@ def userSearchPrompt():
         print("Search for user: 1")
         print("Follow User: 2")
         print("Unfollow User: 3")
+        print("View user profile: 4")
         print("Back to main: q")
         cmdlnInput = input(":")
         if cmdlnInput == "1":
@@ -247,12 +251,15 @@ def userSearchPrompt():
             followUserPrompt()
         elif cmdlnInput == "3":
             unfollowUserPrompt()
+        elif cmdlnInput == "4":
+            username = input("Give a username: ")
+            profilePrompt(username)
         elif cmdlnInput == "q":
             break
         else:
             print("Invalid Input")
 
-def readBookPrompt(bookTitle):
+def readBookPrompt(bookTitle = None):
     global currentUsername
     if bookTitle == None:
         bookTitle = input("Which book do you want to read: ")
@@ -372,19 +379,66 @@ def rateBookPrompt():
     rating = input("Your rating: ")
     PostgresFunctions.rateBook(curs, currentUsername, bookId, rating)
 
+def profilePrompt(username):
+    basic, books = PostgresFunctions.showUserProfile(curs, username)
+    print(f"{basic[0]}'s profile:")
+    print(f"{basic[1]} collections, {basic[2]} followers, {basic[3]} following")
+    print(f"{username}'s top 10 books:")
+    for book in books:
+        print(book)
+    print()
+
+def recommendBookPrompt(username):
+    while (True):
+        print("Top 20 Most Popular Books in last 90 days: 1")
+        print("Top 20 Most Popular Books Among Followers: 2")
+        print("Top 5 new Releases This Month: 3")
+        print("Recommended books for you (Top 10): 4")
+        print("Back to main: q")
+        cmdlnInput = input(":")
+        if cmdlnInput == "1":
+            print("Top 20 Most Popular Books in last 90 days:")
+            top20Books = PostgresFunctions.getTopBooks(curs)
+            for book in top20Books:
+                print(book[0] + "  Avg rating: " + str(book[1]))
+        elif cmdlnInput == "2":
+            print("Top 20 Most Popular Books Among Followers:")
+            topFollowerBooks = PostgresFunctions.getFollowersTopBooks(curs, username)
+            for book in topFollowerBooks:
+                print(book[0] + "  Avg rating: " + str(book[1]))
+        elif cmdlnInput == "3":
+            print("Top 5 new Releases this month: ")
+            top5NewBooks = PostgresFunctions.getTop5OfMonth(curs)
+            for book in top5NewBooks:
+                print(book[0] + "  Avg rating: " + str(book[1]))
+        elif cmdlnInput == "4":
+            print("Recommended books for you (Top 10): ")
+            for book in PostgresFunctions.getRecommendedBooks(curs, username):
+                print(book[0])
+        elif (cmdlnInput == "q"):
+            break
+        else:
+            print("Invalid Input")
+
 def mainPrompt():
     while (True):
         print("Search Books: 1")
-        print("Search Users: 2")
-        print("Go To Collections: 3")
+        print("Recommend Book: 2")
+        print("Search Users: 3")
+        print("Go To Collections: 4")
+        print("View your profile: 5")
         print("Exit and log out: q")
         cmdlnInput = input(":")
         if (cmdlnInput == "1"):
             bookSearchPrompt()
         elif (cmdlnInput == "2"):
-            userSearchPrompt()
+            recommendBookPrompt(currentUsername)
         elif (cmdlnInput == "3"):
+            userSearchPrompt()
+        elif (cmdlnInput == "4"):
             collectionsPrompt()
+        elif(cmdlnInput == "5"):
+            profilePrompt(currentUsername)
         elif (cmdlnInput == "q"):
             print("Signing Out")
             break
